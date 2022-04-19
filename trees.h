@@ -15,3 +15,5 @@ typedef struct tree {
 
 // functions decleration
 int findInsId(InstrumentTree tree, char* instrument);
+InstrumentTree BuildInstTree(char** InstrumentsList, int ListSize);
+
