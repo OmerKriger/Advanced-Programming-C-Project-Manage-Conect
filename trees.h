@@ -16,6 +16,12 @@ typedef struct tree {
 // functions decleration
 int findInsId(InstrumentTree tree, char* instrument);
 InstrumentTree BuildInstTree(char** InstrumentsList, int ListSize);
-void BuildInstTreeRec(TreeNode** root, char** InstrumentsList, int size);
+void BuildInstTreeRec(TreeNode** root, char** InstrumentsList, int size, int* count);
+int findInsIdRec(TreeNode* root, char* instrument);
+
+
+
+
+// test functions
 void printTreeInorder(InstrumentTree Tr);
 void printTreeInorderRec(TreeNode* root);

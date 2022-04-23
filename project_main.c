@@ -12,7 +12,8 @@ void main(int argc, char** argv)
 	int instListLogSize = 7;
 	// calling function 
 	InstrumentTree instrumentTree = BuildInstTree( InstrumentsList, instListLogSize);
-
+	int id = findInsId(instrumentTree, "Keyboard");
+	printf("\n\n Keyboard ID: %d \n",id);
 }
 
 void help(char*** pInstrumentsList,int* pInstListLogSize)
