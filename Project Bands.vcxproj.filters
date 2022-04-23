@@ -18,6 +18,9 @@
     <ClCompile Include="project_main.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="treesFunctions.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="trees.h">

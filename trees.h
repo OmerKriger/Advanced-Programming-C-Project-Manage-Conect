@@ -1,6 +1,6 @@
 #pragma once
 // defines
-
+#include "mainh.h"
 // structs
 typedef struct treeNode {
 	char* instrument;
@@ -16,4 +16,6 @@ typedef struct tree {
 // functions decleration
 int findInsId(InstrumentTree tree, char* instrument);
 InstrumentTree BuildInstTree(char** InstrumentsList, int ListSize);
-
+void BuildInstTreeRec(TreeNode** root, char** InstrumentsList, int size);
+void printTreeInorder(InstrumentTree Tr);
+void printTreeInorderRec(TreeNode* root);

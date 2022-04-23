@@ -1,5 +1,12 @@
 #pragma once
-
+// defines
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdbool.h>
+#include "list.h"
+#include "trees.h"
+// structs
 typedef struct
 {
 	unsigned short insId;
@@ -31,3 +38,5 @@ typedef struct
 	char* name;
 	//CIList instruments;
 } Concert;
+
+void* checkAllocation(void* ptr);
