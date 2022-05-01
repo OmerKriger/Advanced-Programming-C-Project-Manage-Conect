@@ -1,10 +1,11 @@
 #pragma once
 // defines
+#define _CRT_SECURE_NO_WARNINGS
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "list.h"
+#include "files.h"
 #include "trees.h"
 // structs
 typedef struct
@@ -16,7 +17,7 @@ typedef struct
 typedef struct
 {
 	char** name;
-	//MPIList instruments;
+	MusicianPriceInstrument* instruments;
 }Musician;
 
 typedef struct
@@ -39,4 +40,6 @@ typedef struct
 	//CIList instruments;
 } Concert;
 
+// Functions Declerations
 void* checkAllocation(void* ptr);
+Musician** BuildMusiciansGroup(char* fileName, InstrumentTree InstTree);

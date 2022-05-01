@@ -21,12 +21,15 @@
     <ClCompile Include="treesFunctions.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="filesFunctions.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="trees.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="list.h">
+    <ClInclude Include="files.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mainh.h">
