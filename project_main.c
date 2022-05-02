@@ -58,7 +58,7 @@ Musician** BuildMusiciansGroup(char fileName[], InstrumentTree InstTree)
 	musicians = checkAllocation(musicians);
 	musicians[0] = NULL;
 	char* line = getLineFromFile(f);
-	while (!feof(f)) // run till the file is ending
+	while (line != NULL) // run till the file is ending
 	{
 		if (pSize == lSize + 1) // check if there are enough space in the array.
 		{
@@ -91,12 +91,12 @@ Musician* CreateMusician(char* line, InstrumentTree InstTree)
 char** getMusicianName(char** pToken, char* line, InstrumentTree InstTree) // maybe need get it shorter ??????
 {
 	char seps[] = SEPS, * token = NULL;
-	int instrumentID,pSize=2,lSize=0;
+	int instrumentID= NOT_FOUND ,pSize=2,lSize=0;
 	char** fullName = (char**)malloc(sizeof(char*)*pSize);
 	fullName = checkAllocation(fullName);
 	token = strtok(line, seps); // grapping the first
 	checkSTRtok(token); // check grapping 
-	while (lSize <= 1 || instrumentID != NOT_FOUND)
+	while (lSize <= 1 || instrumentID == NOT_FOUND)
 	{
 		if (pSize == lSize + 1)
 		{
@@ -129,7 +129,7 @@ void CreateMPIList(char* token, char* line, InstrumentTree InstTree, MPIList* li
 	while (token != NULL)
 	{
 		instID = findInsId(InstTree, token);
-		token = strtok(line, seps);
+		token = strtok(NULL, seps);
 		checkSTRtok(token);
 		if (sscanf(token, "%d", &tmp) != 1)
 		{
@@ -139,6 +139,7 @@ void CreateMPIList(char* token, char* line, InstrumentTree InstTree, MPIList* li
 		price = (float)tmp;
 		MPI* node = CreateMPInode(instID, price);
 		appendNodeToList(list, node);
+		token = strtok(NULL, seps); // get the next instrument
 	}
 	free(line); // we finished with the this musician and can free the data line
 }
@@ -148,7 +149,7 @@ MPI* CreateMPInode(int ID, float price)
 	MPI* newNode = (MPI*)malloc(sizeof(MPI));
 	newNode = checkAllocation(newNode);
 	newNode->insId = ID;
-	newNode->next = newNode->previous;
+	newNode->next = newNode->previous = NULL;
 	newNode->price = price;
 	return newNode;
 }

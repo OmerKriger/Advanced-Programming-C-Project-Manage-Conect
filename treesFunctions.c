@@ -10,7 +10,7 @@ InstrumentTree BuildInstTree(char* fileName)
 	CreateEmptyTree(&tr); // make root null
 	char* insturmentName = getLineFromFile(f); // get one instrument from the file.
 	unsigned short counterIDs = 0;
-	while (!feof(f)) // run till the end of file
+	while (insturmentName != NULL) // run till the end of file
 	{
 		InsertInstrument(&tr, insturmentName, counterIDs);
 		insturmentName = getLineFromFile(f); // get the name of the next instrument
@@ -74,9 +74,9 @@ int findInsIdRec(TreeNode* root, char* instrument) // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 		if (SAME_STRING)
 			return root->InsId;
 		else if (STR1_GREATER)
-			return findInsIdRec(root->left,instrument); // left Rec
+			return findInsIdRec(root->right, instrument); // right Rec
 		else
-			return findInsIdRec(root->right,instrument); // right Rec
+			return findInsIdRec(root->left, instrument); // left Rec
 	}
 }
 void CreateEmptyTree(InstrumentTree* tr)
