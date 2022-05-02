@@ -22,7 +22,7 @@ typedef struct tree {
 int findInsId(InstrumentTree tree, char* instrument);
 int findInsIdRec(TreeNode* root, char* instrument);
 InstrumentTree BuildInstTree(char* fileName);
-InsertInstrument(InstrumentTree* tr, char* insturment, unsigned short id);
+void InsertInstrument(InstrumentTree* tr, char* insturment, unsigned short id);
 void CreateEmptyTree(InstrumentTree* tr);
 bool isEmptyTree(InstrumentTree tr);
 TreeNode* FindPlaceForInstrument(TreeNode* node, char* instrument);

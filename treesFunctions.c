@@ -1,10 +1,7 @@
 #include "trees.h"
 
 // Functions:
-//														IMPORTANT!!!
-// -------------------------------------------------------------------------------------------------------------------------------------
-// -------------------------------------------------- NEED to check getLineFromFile not take \n ----------------------------------------
-// -------------------------------------------------------------------------------------------------------------------------------------
+
 InstrumentTree BuildInstTree(char* fileName)
 {
 	FILE* f = fopen(fileName, "r"); // file opening for reading
@@ -13,10 +10,9 @@ InstrumentTree BuildInstTree(char* fileName)
 	CreateEmptyTree(&tr); // make root null
 	char* insturmentName = getLineFromFile(f); // get one instrument from the file.
 	unsigned short counterIDs = 0;
-	while (insturmentName != EOF) // run till there is instruments (file isnt end)
+	while (!feof(f)) // run till the end of file
 	{
 		InsertInstrument(&tr, insturmentName, counterIDs);
-		free(insturmentName); // free the instrument string name because we finish with this instrument
 		insturmentName = getLineFromFile(f); // get the name of the next instrument
 		counterIDs++;
 	}
@@ -25,7 +21,7 @@ InstrumentTree BuildInstTree(char* fileName)
 }
 TreeNode* FindPlaceForInstrument(TreeNode* node, char* instrument)
 {
-	if (strcmp(node->instrument, instrument) > 0) // ABC 
+	if (strcmp(node->instrument, instrument) > 0)
 	{
 		if (node->left == NULL)
 			return node;
@@ -40,7 +36,7 @@ TreeNode* FindPlaceForInstrument(TreeNode* node, char* instrument)
 			return FindPlaceForInstrument(node->right, instrument);
 	}
 }
-InsertInstrument(InstrumentTree* tr, char* insturment,unsigned short id)
+void InsertInstrument(InstrumentTree* tr, char* insturment,unsigned short id)
 {
 	TreeNode* father;
 	TreeNode* newNode = (TreeNode*)malloc(sizeof(TreeNode));
@@ -50,10 +46,14 @@ InsertInstrument(InstrumentTree* tr, char* insturment,unsigned short id)
 	newNode->left = newNode->right = NULL;
 	
 	if (isEmptyTree(*tr))
+	{
+		newNode->father = NULL;
 		tr->root = newNode;
+	}
 	else
 	{
 		father = FindPlaceForInstrument(tr->root, insturment);
+		newNode->father = father;
 		if (strcmp(father->instrument, insturment) > 0)
 			father->left = newNode;
 		else
@@ -64,13 +64,13 @@ int findInsId(InstrumentTree tree, char* instrument)
 {
 	return findInsIdRec(tree.root, instrument);
 }
-int findInsIdRec(TreeNode* root, char* instrument)
+int findInsIdRec(TreeNode* root, char* instrument) // ABCDEFGHIJKLMNOPQRSTUVWXYZ
 {
 	if (root == NULL)
 		return NOT_FOUND;
 	else
 	{                           
-		int res = strcmp(root->instrument, instrument);
+		int res = strcmp(instrument,root->instrument);
 		if (SAME_STRING)
 			return root->InsId;
 		else if (STR1_GREATER)
@@ -78,18 +78,6 @@ int findInsIdRec(TreeNode* root, char* instrument)
 		else
 			return findInsIdRec(root->right,instrument); // right Rec
 	}
-}
-void printTreeInorder(InstrumentTree Tr)
-{
-	printTreeInorderRec(Tr.root);
-}
-void printTreeInorderRec(TreeNode* root)
-{
-	if (root == NULL)
-		return;
-	printTreeInorderRec(root->left);
-	printf("| %s (ID:%d) |", root->instrument,root->InsId);
-	printTreeInorderRec(root->right);
 }
 void CreateEmptyTree(InstrumentTree* tr)
 {
@@ -103,4 +91,20 @@ bool isEmptyTree(InstrumentTree tr)
 		return false;
 }
 
+
+
+
+// support functions
+void printTreeInorder(InstrumentTree Tr)
+{
+	printTreeInorderRec(Tr.root);
+}
+void printTreeInorderRec(TreeNode* root)
+{
+	if (root == NULL)
+		return;
+	printTreeInorderRec(root->left);
+	printf("| %s (ID:%d) |", root->instrument, root->InsId);
+	printTreeInorderRec(root->right);
+}
 

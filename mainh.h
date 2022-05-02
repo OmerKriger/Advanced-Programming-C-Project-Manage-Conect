@@ -12,12 +12,22 @@ typedef struct
 {
 	unsigned short insId;
 	float price;
+	struct MusicianPriceInstrument* next;
+	struct MusicianPriceInstrument* previous;
 } MusicianPriceInstrument;
+
+typedef MusicianPriceInstrument MPI;
+
+typedef struct mpiList
+{
+	MPI* head;
+	MPI* tail;
+} MPIList;
 
 typedef struct
 {
 	char** name;
-	MusicianPriceInstrument* instruments;
+	MPIList instruments;
 }Musician;
 
 typedef struct
@@ -42,4 +52,3 @@ typedef struct
 
 // Functions Declerations
 void* checkAllocation(void* ptr);
-Musician** BuildMusiciansGroup(char* fileName, InstrumentTree InstTree);

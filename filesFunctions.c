@@ -7,12 +7,15 @@ char* getLineFromFile(FILE* f)
 	char line[MAX_SIZE_OF_LINE+1];
 	if (fgets(line, MAX_SIZE_OF_LINE + 1, f) != NULL)
 	{
-		lineResult = (char*)malloc(sizeof(char) * strlen(line));
-		lineResult = checkAllocation(lineResult);
+		int len = strlen(line);		
+		if (line[len - 1] == '\n')
+			line[len - 1] = '\0';
+		lineResult = _strdup(line);
 		strcpy(lineResult, line);
+		lineResult = checkAllocation(lineResult);
 	}
 	else
-		lineResult = (char*)EOF;
+		return NULL;
 	return lineResult;
 }
 bool checkFilePaths(int argc, char** argv, int RequiredFiles)
@@ -30,3 +33,4 @@ void checkOpenFile(FILE* f)
 		exit(1);
 	}
 }
+
