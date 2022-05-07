@@ -30,6 +30,7 @@ typedef struct
 	MPIList instruments;
 }Musician;
 
+
 typedef struct
 {
 	int day, month, year;

@@ -11,7 +11,6 @@ char* getLineFromFile(FILE* f)
 		if (line[len - 1] == '\n')
 			line[len - 1] = '\0';
 		lineResult = _strdup(line);
-		strcpy(lineResult, line);
 		lineResult = checkAllocation(lineResult);
 	}
 	else

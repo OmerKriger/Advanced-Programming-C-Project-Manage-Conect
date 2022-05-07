@@ -2,7 +2,7 @@
 
 // Functions:
 
-InstrumentTree BuildInstTree(char* fileName)
+InstrumentTree BuildInstTree(char* fileName, unsigned short* instAmount)
 {
 	FILE* f = fopen(fileName, "r"); // file opening for reading
 	checkOpenFile(f);
@@ -16,6 +16,7 @@ InstrumentTree BuildInstTree(char* fileName)
 		insturmentName = getLineFromFile(f); // get the name of the next instrument
 		counterIDs++;
 	}
+	*instAmount = counterIDs;
 	fclose(f); // file closing
 	return tr;
 }

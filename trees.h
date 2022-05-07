@@ -21,7 +21,7 @@ typedef struct tree {
 // functions decleration
 int findInsId(InstrumentTree tree, char* instrument);
 int findInsIdRec(TreeNode* root, char* instrument);
-InstrumentTree BuildInstTree(char* fileName);
+InstrumentTree BuildInstTree(char* fileName, unsigned short* instAmount);
 void InsertInstrument(InstrumentTree* tr, char* insturment, unsigned short id);
 void CreateEmptyTree(InstrumentTree* tr);
 bool isEmptyTree(InstrumentTree tr);

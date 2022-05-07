@@ -15,17 +15,24 @@ bool isEmptyList(MPIList* list);
 MPI* CreateMPInode(int ID, float price);
 void CreateMPIList(char* token,char* line, InstrumentTree InstTree, MPIList* list);
 void appendNodeToList(MPIList* list, MPI* node);
+Musician*** BuildMusiciansCollection(Musician** musicianGroup, unsigned short instAmount);
+
+
 
 // functions
 void main(int argc, char* argv[])
 {	
+	unsigned short instAmount;
+
 	if (!checkFilePaths(argc, argv, FILES))
 	{
 		printf("Missing name/paths of files");
 		return;
 	}
-	InstrumentTree InstTree = BuildInstTree(argv[INSTRUMENTS]);
+
+	InstrumentTree InstTree = BuildInstTree(argv[INSTRUMENTS], &instAmount);
 	Musician** MusiciansGroup = BuildMusiciansGroup(argv[MUSICIANS], InstTree);
+	Musician*** MusicianCollection = BuildMusiciansCollection(MusiciansGroup, &instAmount);
 }
 
 void* checkAllocation(void* ptr)
@@ -104,14 +111,14 @@ char** getMusicianName(char** pToken, char* line, InstrumentTree InstTree) // ma
 			char** tmp = realloc(fullName, sizeof(char*) * pSize);
 			fullName = checkAllocation(tmp);
 		}
-		char* name = _strdup(token);
+		char* name = _strdup(token); 
 		name = checkAllocation(name);
 		fullName[lSize] = name;
 		lSize++;
 		fullName[lSize] = NULL;
 		token = strtok(NULL,seps); // grapping next name/instrument in line
 		checkSTRtok(token);
-		if(lSize> 1)
+		if(lSize > 1)
 			instrumentID = findInsId(InstTree, token); // check if the next grapping is instrument
 	}
 	pSize = lSize + 1;
@@ -139,6 +146,7 @@ void CreateMPIList(char* token, char* line, InstrumentTree InstTree, MPIList* li
 		price = (float)tmp;
 		MPI* node = CreateMPInode(instID, price);
 		appendNodeToList(list, node);
+
 		token = strtok(NULL, seps); // get the next instrument
 	}
 	free(line); // we finished with the this musician and can free the data line
@@ -179,4 +187,18 @@ bool isEmptyList(MPIList* list)
 		return true;
 	else
 		return false;
+}
+
+
+
+Musician*** BuildMusiciansCollection(Musician** musicianGroup, unsigned short instAmount)
+{
+	Musician*** musicianCollection = (Musician***)malloc(sizeof(Musician**) * instAmount);
+	musicianCollection = checkAllocation(musicianCollection);
+
+
+
+
+
+
 }
