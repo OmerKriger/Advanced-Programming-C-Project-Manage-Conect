@@ -30,6 +30,14 @@ typedef struct
 	MPIList instruments;
 }Musician;
 
+typedef struct // temp for test
+{
+	int logSize;
+	int phySize;
+	Musician** pMusicians;
+}MusiciansCollection;
+
+
 
 typedef struct
 {

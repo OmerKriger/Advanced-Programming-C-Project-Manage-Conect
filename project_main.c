@@ -15,9 +15,9 @@ bool isEmptyList(MPIList* list);
 MPI* CreateMPInode(int ID, float price);
 void CreateMPIList(char* token,char* line, InstrumentTree InstTree, MPIList* list);
 void appendNodeToList(MPIList* list, MPI* node);
-Musician*** BuildMusiciansCollection(Musician** musicianGroup, unsigned short instAmount);
-
-
+MusiciansCollection* BuildMusiciansCollection(Musician** musicianGroup, unsigned short instAmount);
+MusiciansCollection* initializeArray(MusiciansCollection* collection, unsigned short size);
+MusiciansCollection* tightenTheArr(MusiciansCollection* collection, unsigned short size);
 
 // functions
 void main(int argc, char* argv[])
@@ -32,7 +32,7 @@ void main(int argc, char* argv[])
 
 	InstrumentTree InstTree = BuildInstTree(argv[INSTRUMENTS], &instAmount);
 	Musician** MusiciansGroup = BuildMusiciansGroup(argv[MUSICIANS], InstTree);
-	Musician*** MusicianCollection = BuildMusiciansCollection(MusiciansGroup, &instAmount);
+	MusiciansCollection* MusicianCollection = BuildMusiciansCollection(MusiciansGroup, instAmount);
 }
 
 void* checkAllocation(void* ptr)
@@ -79,7 +79,7 @@ Musician** BuildMusiciansGroup(char fileName[], InstrumentTree InstTree)
 		line = getLineFromFile(f); // get new line for next round
 	}
 	pSize = lSize + 1;
-	Musician** tmp = (Musician**)realloc(musicians, sizeof(Musician*) * (pSize)); // make the array tite (last cell is NULL for marking end)
+	Musician** tmp = (Musician**)realloc(musicians, sizeof(Musician*) * (pSize)); // make the array tight (last cell is NULL for marking end)
 	musicians = checkAllocation(tmp); 
 	return musicians; // return the array of pointers to musician
 }
@@ -190,15 +190,68 @@ bool isEmptyList(MPIList* list)
 }
 
 
-
-Musician*** BuildMusiciansCollection(Musician** musicianGroup, unsigned short instAmount)
+MusiciansCollection* BuildMusiciansCollection(Musician** musicianGroup, unsigned short instAmount)
 {
-	Musician*** musicianCollection = (Musician***)malloc(sizeof(Musician**) * instAmount);
+	// a function to build an array of arrays of pionters to musicians.
+	MusiciansCollection* musicianCollection = (MusiciansCollection*)malloc(sizeof(MusiciansCollection) * instAmount);
 	musicianCollection = checkAllocation(musicianCollection);
 
+	int i = 0;
+	musicianCollection = initializeArray(musicianCollection, instAmount);
+
+	while (musicianGroup[i] != NULL) // check how many players for every instrument.
+	{
+		MPI* curr = musicianGroup[i]->instruments.head;
+		while (curr != NULL)
+		{
+			int collectionInd = curr->insId;
+
+			if (musicianCollection[collectionInd].phySize == musicianCollection[collectionInd].logSize)
+			{
+				musicianCollection[collectionInd].phySize *= 2;
+				Musician** temp = (Musician**)realloc(musicianCollection[collectionInd].pMusicians, sizeof(Musician*) * musicianCollection[collectionInd].phySize);
+				musicianCollection[collectionInd].pMusicians = checkAllocation(temp);
+			}
+			int logSize = musicianCollection[collectionInd].logSize;
+			musicianCollection[collectionInd].pMusicians[logSize] = musicianGroup[i];
+			musicianCollection[collectionInd].logSize += 1;
+
+			curr = curr->next;
+		}
+		i++;
+	}
+	musicianCollection = tightenTheArr(musicianCollection, instAmount);
 
 
+	return musicianCollection;
+}
 
+MusiciansCollection* initializeArray(MusiciansCollection* collection, unsigned short size)
+{
+	// a function to initialize the values in musicCollection.
+	int i;
+	Musician** tmp;
 
+	for (i = 0; i < size; i++)
+	{
+		tmp = (Musician**)malloc(sizeof(Musician*));
+		collection[i].pMusicians = checkAllocation(tmp);
+		collection[i].logSize = 0;
+		collection[i].phySize = 1;
+	}
+	return collection;
+}
 
+MusiciansCollection* tightenTheArr(MusiciansCollection* collection, unsigned short size)
+{
+	// a function to tighten a given arr
+	int i;
+	Musician** tmp;
+
+	for (i = 0; i < size; i++)
+	{
+		tmp = (Musician**)realloc(collection[i].pMusicians, sizeof(Musician*) * collection[i].logSize);
+		collection[i].pMusicians = tmp;
+	}
+	return collection;
 }
