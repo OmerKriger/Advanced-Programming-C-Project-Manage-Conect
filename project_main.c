@@ -19,6 +19,7 @@ void main(int argc, char* argv[])
 	MusiciansCollection* MusicianCollection = BuildMusiciansCollection(MusiciansGroup, instAmount);
 }
 
+// hi omer
 void* checkAllocation(void* ptr)
 {
 	if (ptr == NULL)
