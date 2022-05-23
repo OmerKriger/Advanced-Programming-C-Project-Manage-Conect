@@ -69,6 +69,7 @@ typedef struct
 
 typedef struct CI
 {
+	char* insName;
 	int num;
 	int inst;
 	char importance;

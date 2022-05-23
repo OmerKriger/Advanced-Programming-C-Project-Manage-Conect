@@ -14,6 +14,9 @@ char* getLineOfText();
 Concert getConcertData(char* data, InstrumentTree InstTree);
 Date getDate();
 void reserveMusicians(Concert concert);
+void printMusiciansForConcert(MusiciansCollection* Mcollection, Concert concert);
+void printConcertsDetails(Concert concert);
+char* musicanName(char** arr, int* size);
 
 
 void main(int argc, char* argv[])
@@ -32,7 +35,6 @@ void main(int argc, char* argv[])
 	sortMusicianCollection(MusicianCollection, instAmount);
 	initializeIsChosen(MusiciansGroup);
 	getShow(InstTree, MusiciansGroup, MusicianCollection);
-	
 }
 
 void getShow(InstrumentTree InstTree, Musician** MusiciansGroup, MusiciansCollection* MusicianCollection)
@@ -129,6 +131,84 @@ void sortMusicianCollection(MusiciansCollection* Mcollection, int instAmount)
 		bubbleSort(Mcollection[i].pMusicians, Mcollection[i].logSize);
 }
 
+void printMusiciansForConcert(MusiciansCollection* Mcollection, Concert concert)
+{
+	char importance;
+	int i, size, len , totalPrice = 0;
+	char* str = NULL, * tmp;
+	CINode* curr = concert.instruments.head;
+	while (curr != NULL)
+	{
+		if (curr->importance == 0)
+		{
+			for (i = 0; i < Mcollection[curr->inst].logSize; i++)
+			{
+
+				if (Mcollection[curr->inst].pMusicians[i]->isChosen == false)
+				{
+					str = musicanName(Mcollection[curr->inst].pMusicians[i]->name, &size);
+					len = strlen(curr->insName);
+					len += 8;
+					tmp = (char*)realloc(str, size + sizeof(char) * (len)); // 8 for spaces and commas/dots.
+					str = checkAllocation(str);
+
+					MPI* currInst = Mcollection[curr->inst].pMusicians[i]->instruments.head;
+					while (currInst != NULL)
+					{
+						if (currInst->insId == curr->inst)
+						{
+							if (curr->next != NULL)
+								sprintf(str, " - %s (%d), ", curr->insName, (int)currInst->price);
+							else
+								sprintf(str, " - %s (%d). ", curr->insName, (int)currInst->price);
+							totalPrice += currInst->price;
+						}
+						currInst = currInst->next;
+					}
+				}
+			}
+		}
+		curr = curr->next;
+	}
+	if (str == NULL)
+		printf("Could not find musicians for the concert %s", concert.name);
+	else
+	{
+		printf("%s", str);
+		printf("Toatal cost: %d", totalPrice);
+	}
+}
+
+
+void printConcertsDetails(Concert concert)
+{
+	printf("%s", concert.name);
+	if (concert.date_of_concert.day < 10 && concert.date_of_concert.month >= 10)
+		printf(" 0%d %d %d ", concert.date_of_concert.day, concert.date_of_concert.month, concert.date_of_concert.year);
+	else if (concert.date_of_concert.day < 10 && concert.date_of_concert.month < 10)
+		printf(" 0%d 0%d %d ", concert.date_of_concert.day, concert.date_of_concert.month, concert.date_of_concert.year);
+	else if (concert.date_of_concert.day >= 10 && concert.date_of_concert.month < 10)
+		printf(" %d 0%d %d ", concert.date_of_concert.day, concert.date_of_concert.month, concert.date_of_concert.year);
+	else
+		printf(" %d %d %d ", concert.date_of_concert.day, concert.date_of_concert.month, concert.date_of_concert.year);
+	int whole = concert.date_of_concert.hour;
+	float decimal = concert.date_of_concert.hour;
+	decimal = (decimal - whole) * 100;
+	printf("%d:%f.0", whole, decimal);
+}
+
+
+void initializeIsChosen(Musician** musicians)
+{
+	int i = 0;
+	while (musicians[i] != NULL)
+	{
+		musicians[i]->isChosen = false;
+		i++;
+	}
+}
+
+
 // temp until qSort
 void bubbleSort(Musician** arr, int size)
 {
@@ -168,43 +248,29 @@ void swap(Musician** m1, Musician** m2)
 	*m2 = tmp;
 }
 
-
-void findMusicianForConcert(MusiciansCollection* Mcollection, int instAmount, Concert concert)
-{
-	char importance;
-	int i;
-	char* str;
-	CINode* curr = concert.instruments.head;
-	while (curr != NULL)
-	{
-		if (curr->importance == 0)
-		{
-			for (i = 0; i < Mcollection[curr->inst].logSize; i++)
-			{
-
-				if (Mcollection[curr->inst].pMusicians[i]->isChosen == false)
-				{
-					int len = strlen(Mcollection[curr->inst].pMusicians[i]->name);
-					str = (char*)realloc(str, strlen(str) + sizeof(char) * len);
-					str = checkAllocation(str);
-
-				}
-		
-			}
-
-		}
-		curr = curr->next;
-	}
-}
-
-void initializeIsChosen(Musician** musicians)
+char* musicanName(char** arr, int* size)
 {
 	int i = 0;
-	while (musicians[i] != NULL)
+	char* str;
+	int strSize = 0;
+	while (arr[i] != NULL)
 	{
-		musicians[i]->isChosen = false;
+		int len = strlen(arr[i]);
+		strSize += len;
 		i++;
 	}
+	strSize++; // for '\0'
+	str = (char*)malloc(sizeof(char) * strSize);
+	str = checkAllocation(str);
+	i = 0;
+	while (arr[i] != NULL)
+	{
+		strcat(str, arr[i]);
+		i++;
+	}
+	str[strSize - 1] = '\0';
+	*size = strSize;
+	return str;
 }
 
 

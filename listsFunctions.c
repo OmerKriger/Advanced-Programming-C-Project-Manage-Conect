@@ -29,16 +29,17 @@ CIList createCIList(InstrumentTree tr)
 {
 	CIList list;
 	list.head = list.tail = NULL;
-	char* token, seps[] = SEPS2;
+	char* token, seps[] = SEPS2, * name;
 	token = strtok(NULL, seps);
 	while (token != NULL)
 	{
+		name = _strdup(token);
 		int instID = findInsId(tr, token);
 		token = strtok(NULL, seps);
 		int amount = atoi(token);
 		token = strtok(NULL, seps);
 		char importance = atoi(token);
-		CINode* node = createCINode(instID, amount, importance);
+		CINode* node = createCINode(instID, amount, importance, name);
 		appendCINodeToList(&list,node);
 		token = strtok(NULL, seps);
 	}
@@ -55,13 +56,14 @@ MPI* CreateMPInode(int ID, float price)
 	return newNode;
 }
 
-CINode* createCINode(int id,int amount,char importance)
+CINode* createCINode(int id,int amount,char importance,char* name)
 {
 	CINode* node = (CINode*)malloc(sizeof(CINode));
 	node = checkAllocation(node);
 	node->importance = importance;
 	node->inst = id;
 	node->num = amount;
+	node->insName = name;
 	node->next = NULL;
 	return node;
 }
