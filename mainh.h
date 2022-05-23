@@ -50,9 +50,10 @@ typedef struct
 {
 	char** name;
 	MPIList instruments;
+	bool isChosen;
 }Musician;
 
-typedef struct // temp for test
+typedef struct
 {
 	int logSize;
 	int phySize;
@@ -70,13 +71,22 @@ typedef struct
 	int num;
 	int inst;
 	char importance;
+	struct ConcertInstrument* next;
 }ConcertInstrument;
+
+typedef ConcertInstrument CINode;
+
+typedef struct ConcertInstrumentList
+{
+	CINode* head;
+	CINode* tail;
+}CIList;
 
 typedef struct
 {
 	Date date_of_concert;
 	char* name;
-	//CIList instruments;
+	CIList instruments;
 } Concert;
 
 
