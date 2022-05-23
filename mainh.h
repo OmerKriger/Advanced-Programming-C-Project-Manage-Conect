@@ -9,6 +9,7 @@
 #define INSTRUMENTS 1
 #define MUSICIANS 2
 #define SEPS " ,.;:?!-\t'()[]{}<>~_"
+#define SEPS2 " :"
 #define NOT_FOUND -1
 #define SAME_STRING res == 0
 #define STR1_GREATER res > 0
@@ -16,6 +17,7 @@
 // Functions Declerations
 void* checkAllocation(void* ptr);
 void checkSTRtok(char* ptr);
+void getShow();
 #pragma once
 // structs
 typedef struct treeNode {
@@ -34,8 +36,8 @@ typedef struct mpi
 {
 	unsigned short insId;
 	float price;
-	struct MusicianPriceInstrument* next;
-	struct MusicianPriceInstrument* previous;
+	struct mpi* next;
+	struct mpi* previous;
 } MusicianPriceInstrument;
 
 typedef MusicianPriceInstrument MPI;
@@ -65,18 +67,26 @@ typedef struct
 	float hour;
 } Date;
 
-typedef struct
+typedef struct CI
 {
 	int num;
 	int inst;
 	char importance;
+	struct CI* next;
 }ConcertInstrument;
+
+typedef ConcertInstrument CINode;
+
+typedef struct ConcertInstrumentList
+{
+	CINode* head;
+	CINode* tail;
+}CIList;
 
 typedef struct
 {
 	Date date_of_concert;
 	char* name;
-	//CIList instruments;
+	CIList instruments;
 } Concert;
-
 
