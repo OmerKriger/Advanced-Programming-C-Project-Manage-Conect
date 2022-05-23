@@ -9,6 +9,7 @@
 #define INSTRUMENTS 1
 #define MUSICIANS 2
 #define SEPS " ,.;:?!-\t'()[]{}<>~_"
+#define SEPS2 " :"
 #define NOT_FOUND -1
 #define SAME_STRING res == 0
 #define STR1_GREATER res > 0
@@ -34,8 +35,8 @@ typedef struct mpi
 {
 	unsigned short insId;
 	float price;
-	struct MusicianPriceInstrument* next;
-	struct MusicianPriceInstrument* previous;
+	struct mpi* next;
+	struct mpi* previous;
 } MusicianPriceInstrument;
 
 typedef MusicianPriceInstrument MPI;
@@ -66,12 +67,12 @@ typedef struct
 	float hour;
 } Date;
 
-typedef struct
+typedef struct CI
 {
 	int num;
 	int inst;
 	char importance;
-	struct ConcertInstrument* next;
+	struct CI* next;
 }ConcertInstrument;
 
 typedef ConcertInstrument CINode;
@@ -88,5 +89,4 @@ typedef struct
 	char* name;
 	CIList instruments;
 } Concert;
-
 

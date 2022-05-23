@@ -18,11 +18,31 @@ void CreateMPIList(char* token, char* line, InstrumentTree InstTree, MPIList* li
 		}
 		price = (float)tmp;
 		MPI* node = CreateMPInode(instID, price);
-		appendNodeToList(list, node);
+		appendMPINodeToList(list, node);
 
 		token = strtok(NULL, seps); // get the next instrument
 	}
 	free(line); // we finished with the this musician and can free the data line
+}
+
+CIList createCIList(InstrumentTree tr)
+{
+	CIList list;
+	list.head = list.tail = NULL;
+	char* token, seps[] = SEPS2;
+	token = strtok(NULL, seps);
+	while (token != NULL)
+	{
+		int instID = findInsId(tr, token);
+		token = strtok(NULL, seps);
+		int amount = atoi(token);
+		token = strtok(NULL, seps);
+		char importance = atoi(token);
+		CINode* node = createCINode(instID, amount, importance);
+		appendCINodeToList(&list,node);
+		token = strtok(NULL, seps);
+	}
+	return list;
 }
 
 MPI* CreateMPInode(int ID, float price)
@@ -35,7 +55,18 @@ MPI* CreateMPInode(int ID, float price)
 	return newNode;
 }
 
-void appendNodeToList(MPIList* list, MPI* node) // weird warning need to look
+CINode* createCINode(int id,int amount,char importance)
+{
+	CINode* node = (CINode*)malloc(sizeof(CINode));
+	node = checkAllocation(node);
+	node->importance = importance;
+	node->inst = id;
+	node->num = amount;
+	node->next = NULL;
+	return node;
+}
+
+void appendMPINodeToList(MPIList* list, MPI* node) // weird warning need to look
 {
 	if (isEmptyList(list))
 	{
@@ -45,6 +76,19 @@ void appendNodeToList(MPIList* list, MPI* node) // weird warning need to look
 	{
 		list->tail->next = node;
 		node->previous = list->tail;
+		list->tail = node;
+	}
+}
+
+void appendCINodeToList(CIList* list, CINode* node)
+{
+	if (list->head == NULL || list->tail == NULL)
+	{
+		list->head = list->tail = node;
+	}
+	else
+	{
+		list->tail->next = node;
 		list->tail = node;
 	}
 }
