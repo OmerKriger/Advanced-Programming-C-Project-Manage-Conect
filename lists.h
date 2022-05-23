@@ -11,6 +11,6 @@ MusiciansCollection* BuildMusiciansCollection(Musician** musicianGroup, unsigned
 MusiciansCollection* initializeArray(MusiciansCollection* collection, unsigned short size);
 MusiciansCollection* tightenTheArr(MusiciansCollection* collection, unsigned short size);
 CIList createCIList(InstrumentTree tr);
-CINode* createCINode(int id, int amount, char importance);
+CINode* createCINode(int id, int amount, char importance, char* name);
 void appendCINodeToList(CIList* list, CINode* node);
 
