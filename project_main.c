@@ -19,7 +19,6 @@ MusiciansCollection* BuildMusiciansCollection(Musician** musicianGroup, unsigned
 MusiciansCollection* initializeArray(MusiciansCollection* collection, unsigned short size);
 MusiciansCollection* tightenTheArr(MusiciansCollection* collection, unsigned short size);
 
-
 // functions
 void main(int argc, char* argv[])
 {	
@@ -256,6 +255,3 @@ MusiciansCollection* tightenTheArr(MusiciansCollection* collection, unsigned sho
 	}
 	return collection;
 }
-
-
-
