@@ -17,7 +17,6 @@
 // Functions Declerations
 void* checkAllocation(void* ptr);
 void checkSTRtok(char* ptr);
-void getShow();
 #pragma once
 // structs
 typedef struct treeNode {
