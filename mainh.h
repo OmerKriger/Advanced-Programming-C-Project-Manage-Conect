@@ -1,14 +1,36 @@
-#pragma once
 // defines
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdbool.h>
-#include "files.h"
-#include "trees.h"
+// defines
+#define FILES 2
+#define INSTRUMENTS 1
+#define MUSICIANS 2
+#define SEPS " ,.;:?!-\t'()[]{}<>~_"
+#define NOT_FOUND -1
+#define SAME_STRING res == 0
+#define STR1_GREATER res > 0
+
+// Functions Declerations
+void* checkAllocation(void* ptr);
+void checkSTRtok(char* ptr);
+#pragma once
 // structs
-typedef struct
+typedef struct treeNode {
+	char* instrument;
+	unsigned short InsId;
+	struct treeNode* father;
+	struct treeNode* left;
+	struct treeNode* right;
+} TreeNode;
+
+typedef struct tree {
+	TreeNode* root;
+} InstrumentTree;
+
+typedef struct mpi
 {
 	unsigned short insId;
 	float price;
@@ -37,8 +59,6 @@ typedef struct // temp for test
 	Musician** pMusicians;
 }MusiciansCollection;
 
-
-
 typedef struct
 {
 	int day, month, year;
@@ -59,5 +79,4 @@ typedef struct
 	//CIList instruments;
 } Concert;
 
-// Functions Declerations
-void* checkAllocation(void* ptr);
+

@@ -1,4 +1,4 @@
-#include "mainh.h"
+#include "files.h"
 #define MAX_SIZE_OF_LINE 150
 // functions
 char* getLineFromFile(FILE* f)
@@ -7,7 +7,7 @@ char* getLineFromFile(FILE* f)
 	char line[MAX_SIZE_OF_LINE+1];
 	if (fgets(line, MAX_SIZE_OF_LINE + 1, f) != NULL)
 	{
-		int len = strlen(line);		
+		int len = (int)strlen(line);		
 		if (line[len - 1] == '\n')
 			line[len - 1] = '\0';
 		lineResult = _strdup(line);
