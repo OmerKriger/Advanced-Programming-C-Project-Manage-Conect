@@ -6,6 +6,7 @@
 #include <stdbool.h>
 // defines
 #define FILES 2
+#define FIRST_NAME 0
 #define INSTRUMENTS 1
 #define MUSICIANS 2
 #define SEPS " ,.;:?!-\t'()[]{}<>~_"
@@ -13,7 +14,8 @@
 #define NOT_FOUND -1
 #define SAME_STRING res == 0
 #define STR1_GREATER res > 0
-
+#define SPACES 9
+#define IMPORTANT 1
 // Functions Declerations
 void* checkAllocation(void* ptr);
 void checkSTRtok(char* ptr);

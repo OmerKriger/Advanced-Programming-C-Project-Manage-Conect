@@ -5,19 +5,19 @@
 #include "files.h"
 
 // functions
-void sortMusicianCollection(MusiciansCollection* Mcollection, int instAmount);
+void sortMusicianCollection(MusiciansCollection* mCollection, int instAmount);
 void bubbleSort(Musician** arr, int size);
 void swap(Musician** m1, Musician** m2);
 void initializeIsChosen(Musician** musicians);
-void getShow(InstrumentTree InstTree, Musician** MusiciansGroup, MusiciansCollection* MusicianCollection);
+void getShow(InstrumentTree InstTree, Musician** MusiciansGroup, MusiciansCollection* mCollection);
 char* getLineOfText();
 Concert getConcertData(char* data, InstrumentTree InstTree);
 Date getDate();
-void reserveMusicians(Concert concert);
-void printMusiciansForConcert(MusiciansCollection* Mcollection, Concert concert);
-void printConcertsDetails(Concert concert);
-char* musicanName(char** arr, int* size);
-
+void reserveMusicians(MusiciansCollection* mCollection, Concert concert);
+void printConcertsDetails(Concert concert,char* fullDetails,int totalPrice);
+char* musicanName(char** arr, unsigned short* size);
+int searchInstruemtPrice(MPI* node, unsigned short id);
+char* getDetailsOfMusicians(int size, Musician** pMusicians, CINode* InsRequired, int* totalPrice, unsigned short* strLen);
 
 void main(int argc, char* argv[])
 {	
@@ -28,16 +28,15 @@ void main(int argc, char* argv[])
 		printf("Missing name/paths of files");
 		return;
 	}
-
 	InstrumentTree InstTree = BuildInstTree(argv[INSTRUMENTS], &instAmount);
 	Musician** MusiciansGroup = BuildMusiciansGroup(argv[MUSICIANS], InstTree);
-	MusiciansCollection* MusicianCollection = BuildMusiciansCollection(MusiciansGroup, instAmount);
-	sortMusicianCollection(MusicianCollection, instAmount);
+	MusiciansCollection* musicianCollection = BuildMusiciansCollection(MusiciansGroup, instAmount);
+	sortMusicianCollection(musicianCollection, instAmount);
 	initializeIsChosen(MusiciansGroup);
-	getShow(InstTree, MusiciansGroup, MusicianCollection);
+	getShow(InstTree, MusiciansGroup, musicianCollection);
 }
 
-void getShow(InstrumentTree InstTree, Musician** MusiciansGroup, MusiciansCollection* MusicianCollection)
+void getShow(InstrumentTree InstTree, Musician** MusiciansGroup, MusiciansCollection* mCollection)
 {
 	char* str;
 	Concert concert;
@@ -45,7 +44,8 @@ void getShow(InstrumentTree InstTree, Musician** MusiciansGroup, MusiciansCollec
 	while (str != NULL)
 	{
 		concert = getConcertData(str,InstTree);
-		reserveMusicians(concert);
+		initializeIsChosen(MusiciansGroup);
+		reserveMusicians(mCollection,concert);
 		str = getLineOfText();
 	} 
 
@@ -103,9 +103,6 @@ Date getDate()
 	date.hour = (float)hour + (float)(min / 60);
 	return date;
 }
-void reserveMusicians(Concert concert)
-{
-}
 void* checkAllocation(void* ptr)
 {
 	if (ptr == NULL)
@@ -123,81 +120,105 @@ void checkSTRtok(char* ptr)
 		exit(1);
 	}
 }
-
-void sortMusicianCollection(MusiciansCollection* Mcollection, int instAmount)
+void sortMusicianCollection(MusiciansCollection* mCollection, int instAmount)
 {
 	int i;
 	for (i = 0; i < instAmount; i++)
-		bubbleSort(Mcollection[i].pMusicians, Mcollection[i].logSize);
+		bubbleSort(mCollection[i].pMusicians, mCollection[i].logSize);
 }
-
-void printMusiciansForConcert(MusiciansCollection* Mcollection, Concert concert)
+void reserveMusicians(MusiciansCollection* mCollection, Concert concert)
 {
-	char importance;
-	int i, size, len , totalPrice = 0;
-	char* str = NULL, * tmp;
-	CINode* curr = concert.instruments.head;
-	while (curr != NULL)
+	int totalPrice=0, logSize;
+	unsigned short strDetailsLen = 1;
+	char* reservedDetailsForIns = NULL, * fullDetails = NULL, * tmp;
+	fullDetails = (char*)malloc(sizeof(char) * strDetailsLen);
+	fullDetails = checkAllocation(fullDetails);
+	fullDetails[0] = '\0';
+	bool showReserveFail = false;
+	CINode* InsRequired = concert.instruments.head;
+	while (InsRequired != NULL)
 	{
-		if (curr->importance == 0)
+		Musician** pMusicians = mCollection[InsRequired->inst].pMusicians;
+		logSize = mCollection[InsRequired->inst].logSize; // the size of pointer array in mCollection in InstID index.
+		reservedDetailsForIns = getDetailsOfMusicians(logSize, pMusicians, InsRequired, &totalPrice, &strDetailsLen);
+		if (reservedDetailsForIns == NULL)
 		{
-			for (i = 0; i < Mcollection[curr->inst].logSize; i++)
-			{
-
-				if (Mcollection[curr->inst].pMusicians[i]->isChosen == false)
-				{
-					str = musicanName(Mcollection[curr->inst].pMusicians[i]->name, &size);
-					len = strlen(curr->insName);
-					len += 8;
-					tmp = (char*)realloc(str, size + sizeof(char) * (len)); // 8 for spaces and commas/dots.
-					str = checkAllocation(str);
-
-					MPI* currInst = Mcollection[curr->inst].pMusicians[i]->instruments.head;
-					while (currInst != NULL)
-					{
-						if (currInst->insId == curr->inst)
-						{
-							if (curr->next != NULL)
-								sprintf(str, " - %s (%d), ", curr->insName, (int)currInst->price);
-							else
-								sprintf(str, " - %s (%d). ", curr->insName, (int)currInst->price);
-							totalPrice += currInst->price;
-						}
-						currInst = currInst->next;
-					}
-				}
-			}
+			free(fullDetails);
+			showReserveFail = true;
+			break;
 		}
-		curr = curr->next;
+		tmp = (char*)realloc(fullDetails, sizeof(char) * strDetailsLen);
+		fullDetails = checkAllocation(tmp);
+		strcat(fullDetails, reservedDetailsForIns);
+		free(reservedDetailsForIns);
+		InsRequired = InsRequired->next;
 	}
-	if (str == NULL)
-		printf("Could not find musicians for the concert %s", concert.name);
+	if (showReserveFail == true)
+		printf("Could not find musicians for the concert %s\n", concert.name);
 	else
-	{
-		printf("%s", str);
-		printf("Toatal cost: %d", totalPrice);
-	}
+		printConcertsDetails(concert, fullDetails, totalPrice);
 }
-
-
-void printConcertsDetails(Concert concert)
+char* getDetailsOfMusicians(int size, Musician** pMusicians, CINode* InsRequired,int* totalPrice,unsigned short* strLen)
 {
-	printf("%s", concert.name);
-	if (concert.date_of_concert.day < 10 && concert.date_of_concert.month >= 10)
-		printf(" 0%d %d %d ", concert.date_of_concert.day, concert.date_of_concert.month, concert.date_of_concert.year);
-	else if (concert.date_of_concert.day < 10 && concert.date_of_concert.month < 10)
-		printf(" 0%d 0%d %d ", concert.date_of_concert.day, concert.date_of_concert.month, concert.date_of_concert.year);
-	else if (concert.date_of_concert.day >= 10 && concert.date_of_concert.month < 10)
-		printf(" %d 0%d %d ", concert.date_of_concert.day, concert.date_of_concert.month, concert.date_of_concert.year);
-	else
-		printf(" %d %d %d ", concert.date_of_concert.day, concert.date_of_concert.month, concert.date_of_concert.year);
-	int whole = concert.date_of_concert.hour;
-	float decimal = concert.date_of_concert.hour;
-	decimal = (decimal - whole) * 100;
-	printf("%d:%f.0", whole, decimal);
+	unsigned short int counter = 0,i,len,pSize=1;
+	int price;
+	char* strDetails,*name,tmp[150],*attach;
+	strDetails = (char*)malloc(pSize * sizeof(char));
+	strDetails = checkAllocation(strDetails);
+	strDetails[0] = '\0';
+	if (InsRequired->importance == IMPORTANT)
+		i = size - 1; else i = 0;
+	while (counter < InsRequired->num && 0 <= i && i < size)
+	{
+		if (pMusicians[i]->isChosen == false)
+		{
+			pMusicians[i]->isChosen = true;
+			counter++;
+			name = musicanName(pMusicians[i]->name, &len);
+			price = searchInstruemtPrice(pMusicians[i]->instruments.head, InsRequired->inst);
+			*totalPrice += price;
+			sprintf(tmp, "%d", price);
+			int totalLen = (int)(len + strlen(tmp) + strlen(InsRequired->insName) + SPACES);
+			attach = (char*)malloc(sizeof(char) * totalLen);
+			attach = checkAllocation(attach);
+			(void)sprintf(attach, "%s - %s (%d), ", name, InsRequired->insName, price);
+			pSize += totalLen; 
+			char* allocate = (char*)realloc(strDetails, sizeof(char)*pSize);
+			strDetails = checkAllocation(allocate);
+			strcat(strDetails, attach);
+			free(attach);
+		}
+		if (InsRequired->importance == IMPORTANT)
+			i--; else i++;
+	}
+	if (counter != InsRequired->num)
+	{
+		free(strDetails);
+		return NULL;
+	}
+	*strLen += pSize; 
+	return strDetails;
 }
+int searchInstruemtPrice(MPI* node, unsigned short id)
+{
+	MPI* currNode = node;
+	while (currNode != NULL)
+	{
+		if (currNode->insId == id)
+			return (int)currNode->price;
+		currNode = currNode->next;
+	}
+	return NOT_FOUND;
+}
+void printConcertsDetails(Concert concert,char* details, int price)
+{
+	printf("%s %02d %02d %04d ", concert.name, concert.date_of_concert.day, concert.date_of_concert.month, concert.date_of_concert.year);
+	int hour = (int)concert.date_of_concert.hour, minutes = (((int)(concert.date_of_concert.hour * 100)) % 100);
+	printf("%02d:%02d: ", hour, minutes);
+	printf("%s\b\b. ", details); // \b for remove space and ,
+	printf("Total cost: %d.\n", price);
 
-
+}
 void initializeIsChosen(Musician** musicians)
 {
 	int i = 0;
@@ -207,7 +228,35 @@ void initializeIsChosen(Musician** musicians)
 		i++;
 	}
 }
-
+char* musicanName(char** arr, unsigned short* size)
+{
+	
+	int i = 0;
+	char* str;
+	unsigned short int strSize = 0;
+	while (arr[i] != NULL)
+	{
+		int len = (int)strlen(arr[i]);
+		strSize = strSize + len + 1; // +1 for space or \0
+		i++;
+	}
+	str = (char*)malloc(sizeof(char) * strSize);
+	str = checkAllocation(str);
+	str[0] = '\0';
+	checkAllocation(&arr[FIRST_NAME]);
+	strcpy(str, arr[FIRST_NAME]);
+	i = 1;
+	while (arr[i] != NULL)
+	{
+		strcat(str, " "); // space
+		strcat(str, arr[i]);
+		if(i)
+		i++;
+	}
+	str[strSize - 1] = '\0';
+	*size = strSize;
+	return str;
+}
 
 // temp until qSort
 void bubbleSort(Musician** arr, int size)
@@ -248,29 +297,6 @@ void swap(Musician** m1, Musician** m2)
 	*m2 = tmp;
 }
 
-char* musicanName(char** arr, int* size)
-{
-	int i = 0;
-	char* str;
-	int strSize = 0;
-	while (arr[i] != NULL)
-	{
-		int len = strlen(arr[i]);
-		strSize += len;
-		i++;
-	}
-	strSize++; // for '\0'
-	str = (char*)malloc(sizeof(char) * strSize);
-	str = checkAllocation(str);
-	i = 0;
-	while (arr[i] != NULL)
-	{
-		strcat(str, arr[i]);
-		i++;
-	}
-	str[strSize - 1] = '\0';
-	*size = strSize;
-	return str;
-}
+
 
 
