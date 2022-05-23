@@ -51,9 +51,10 @@ typedef struct
 {
 	char** name;
 	MPIList instruments;
+	bool isChosen;
 }Musician;
 
-typedef struct // temp for test
+typedef struct
 {
 	int logSize;
 	int phySize;
