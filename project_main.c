@@ -4,6 +4,7 @@
 #include "lists.h"
 #include "files.h"
 // functions
+// Hello nir 
 void main(int argc, char* argv[])
 {	
 	unsigned short instAmount;
