@@ -6,8 +6,6 @@
 
 // functions
 void sortMusicianCollection(MusiciansCollection* mCollection, int instAmount);
-void bubbleSort(Musician** arr, int size);
-void swap(Musician** m1, Musician** m2);
 void initializeIsChosen(Musician** musicians);
 void getShow(InstrumentTree InstTree, Musician** MusiciansGroup, MusiciansCollection* mCollection);
 char* getLineOfText();
@@ -17,7 +15,8 @@ void reserveMusicians(MusiciansCollection* mCollection, Concert concert);
 void printConcertsDetails(Concert concert,char* fullDetails,int totalPrice);
 char* musicanName(char** arr, unsigned short* size);
 int searchInstruemtPrice(MPI* node, unsigned short id);
-char* getDetailsOfMusicians(int size, Musician** pMusicians, CINode* InsRequired, int* totalPrice, unsigned short* strLen);
+char* getDetailsOfMusicians(int size, MusPricePerInst* pMusicians, CINode* InsRequired, int* totalPrice, unsigned short* strLen);
+int comparePrices(MusPricePerInst* elem1, MusPricePerInst* elem2);
 
 void main(int argc, char* argv[])
 {	
@@ -32,7 +31,6 @@ void main(int argc, char* argv[])
 	Musician** MusiciansGroup = BuildMusiciansGroup(argv[MUSICIANS], InstTree);
 	MusiciansCollection* musicianCollection = BuildMusiciansCollection(MusiciansGroup, instAmount);
 	sortMusicianCollection(musicianCollection, instAmount);
-	initializeIsChosen(MusiciansGroup);
 	getShow(InstTree, MusiciansGroup, musicianCollection);
 }
 
@@ -43,9 +41,9 @@ void getShow(InstrumentTree InstTree, Musician** MusiciansGroup, MusiciansCollec
 	str = getLineOfText();
 	while (str != NULL)
 	{
-		concert = getConcertData(str,InstTree);
+		concert = getConcertData(str, InstTree);
 		initializeIsChosen(MusiciansGroup);
-		reserveMusicians(mCollection,concert);
+		reserveMusicians(mCollection, concert);
 		str = getLineOfText();
 	} 
 
@@ -120,12 +118,24 @@ void checkSTRtok(char* ptr)
 		exit(1);
 	}
 }
+
+
+
+
 void sortMusicianCollection(MusiciansCollection* mCollection, int instAmount)
 {
+	// sorting all of the musicians arrays in mCollection.
 	int i;
 	for (i = 0; i < instAmount; i++)
-		bubbleSort(mCollection[i].pMusicians, mCollection[i].logSize);
+		qsort(mCollection[i].pMusicians, mCollection[i].logSize, sizeof(MusPricePerInst), comparePrices);
 }
+
+int comparePrices(MusPricePerInst* elem1, MusPricePerInst* elem2)
+{
+	// a function that compares two price elements for qsort.
+	return elem1->price - elem2->price;
+}
+
 void reserveMusicians(MusiciansCollection* mCollection, Concert concert)
 {
 	int totalPrice=0, logSize;
@@ -138,7 +148,7 @@ void reserveMusicians(MusiciansCollection* mCollection, Concert concert)
 	CINode* InsRequired = concert.instruments.head;
 	while (InsRequired != NULL)
 	{
-		Musician** pMusicians = mCollection[InsRequired->inst].pMusicians;
+		MusPricePerInst* pMusicians = mCollection[InsRequired->inst].pMusicians;
 		logSize = mCollection[InsRequired->inst].logSize; // the size of pointer array in mCollection in InstID index.
 		reservedDetailsForIns = getDetailsOfMusicians(logSize, pMusicians, InsRequired, &totalPrice, &strDetailsLen);
 		if (reservedDetailsForIns == NULL)
@@ -158,7 +168,9 @@ void reserveMusicians(MusiciansCollection* mCollection, Concert concert)
 	else
 		printConcertsDetails(concert, fullDetails, totalPrice);
 }
-char* getDetailsOfMusicians(int size, Musician** pMusicians, CINode* InsRequired,int* totalPrice,unsigned short* strLen)
+
+
+char* getDetailsOfMusicians(int size, MusPricePerInst* pMusicians, CINode* InsRequired,int* totalPrice,unsigned short* strLen)
 {
 	unsigned short int counter = 0,i,len,pSize=1;
 	int price;
@@ -170,12 +182,12 @@ char* getDetailsOfMusicians(int size, Musician** pMusicians, CINode* InsRequired
 		i = size - 1; else i = 0;
 	while (counter < InsRequired->num && 0 <= i && i < size)
 	{
-		if (pMusicians[i]->isChosen == false)
+		if (!(pMusicians[i].pForMusician->isChosen))
 		{
-			pMusicians[i]->isChosen = true;
+			pMusicians[i].pForMusician->isChosen = true;
 			counter++;
-			name = musicanName(pMusicians[i]->name, &len);
-			price = searchInstruemtPrice(pMusicians[i]->instruments.head, InsRequired->inst);
+			name = musicanName(pMusicians[i].pForMusician->name, &len);
+			price = searchInstruemtPrice(pMusicians[i].pForMusician->instruments.head, InsRequired->inst);
 			*totalPrice += price;
 			sprintf(tmp, "%d", price);
 			int totalLen = (int)(len + strlen(tmp) + strlen(InsRequired->insName) + SPACES);
@@ -258,44 +270,6 @@ char* musicanName(char** arr, unsigned short* size)
 	return str;
 }
 
-// temp until qSort
-void bubbleSort(Musician** arr, int size)
-{
-	int i, j;
-	for (i = 0; i < size - 1; i++)
-	{
-		for (j = 0; j < size - i - 1; j++)
-		{
-			MPI* curr = arr[j]->instruments.head;
-			MPI* inst = NULL;
-			while (curr != NULL)
-			{
-				if (curr->insId == i)
-					inst = curr;
-				curr = curr->next;
-			}
-			curr = arr[j + 1]->instruments.head;
-			MPI* inst2 = NULL;
-			while (curr != NULL)
-			{
-				if (curr->insId == i)
-					inst2 = curr;
-				curr = curr->next;
-			}
-			if (inst != NULL && inst2 != NULL)
-				if (inst->price > inst2->price)
-					swap(&arr[j], &arr[j + 1]);
-		}
-	}
-}
-void swap(Musician** m1, Musician** m2)
-{
-	Musician* tmp;
-
-	tmp = *m1;
-	*m1 = *m2;
-	*m2 = tmp;
-}
 
 
 

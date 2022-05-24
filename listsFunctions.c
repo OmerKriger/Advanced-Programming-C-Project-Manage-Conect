@@ -108,6 +108,11 @@ bool isEmptyList(MPIList* list)
 		return false;
 }
 
+
+
+
+
+
 MusiciansCollection* BuildMusiciansCollection(Musician** musicianGroup, unsigned short instAmount)
 {
 	// a function to build an array of arrays of pionters to musicians.
@@ -127,20 +132,18 @@ MusiciansCollection* BuildMusiciansCollection(Musician** musicianGroup, unsigned
 			if (musicianCollection[collectionInd].phySize == musicianCollection[collectionInd].logSize)
 			{
 				musicianCollection[collectionInd].phySize *= 2;
-				Musician** temp = (Musician**)realloc(musicianCollection[collectionInd].pMusicians, sizeof(Musician*) * musicianCollection[collectionInd].phySize);
+				MusPricePerInst* temp = (MusPricePerInst*)realloc(musicianCollection[collectionInd].pMusicians, sizeof(MusPricePerInst) * musicianCollection[collectionInd].phySize); 
 				musicianCollection[collectionInd].pMusicians = checkAllocation(temp);
 			}
 			int logSize = musicianCollection[collectionInd].logSize;
-			musicianCollection[collectionInd].pMusicians[logSize] = musicianGroup[i];
+			musicianCollection[collectionInd].pMusicians[logSize].pForMusician = musicianGroup[i];
 			musicianCollection[collectionInd].logSize += 1;
-
+			musicianCollection[collectionInd].pMusicians[logSize].price = curr->price;
 			curr = curr->next;
 		}
 		i++;
 	}
 	musicianCollection = tightenTheArr(musicianCollection, instAmount);
-
-
 	return musicianCollection;
 }
 
@@ -148,11 +151,11 @@ MusiciansCollection* initializeArray(MusiciansCollection* collection, unsigned s
 {
 	// a function to initialize the values in musicCollection.
 	int i;
-	Musician** tmp;
+	MusPricePerInst* tmp;
 
 	for (i = 0; i < size; i++)
 	{
-		tmp = (Musician**)malloc(sizeof(Musician*));
+		tmp = (MusPricePerInst*)malloc(sizeof(MusPricePerInst));
 		collection[i].pMusicians = checkAllocation(tmp);
 		collection[i].logSize = 0;
 		collection[i].phySize = 1;
@@ -164,12 +167,13 @@ MusiciansCollection* tightenTheArr(MusiciansCollection* collection, unsigned sho
 {
 	// a function to tighten a given arr
 	int i;
-	Musician** tmp;
+	MusPricePerInst** tmp;
 
 	for (i = 0; i < size; i++)
 	{
-		tmp = (Musician**)realloc(collection[i].pMusicians, sizeof(Musician*) * collection[i].logSize);
+		tmp = (MusPricePerInst*)realloc(collection[i].pMusicians, sizeof(MusPricePerInst) * collection[i].logSize);
 		collection[i].pMusicians = tmp;
 	}
 	return collection;
 }
+

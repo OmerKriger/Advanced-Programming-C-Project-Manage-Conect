@@ -58,10 +58,19 @@ typedef struct
 
 typedef struct
 {
+	float price;
+	Musician* pForMusician;
+}MusPricePerInst;
+
+typedef struct
+{
 	int logSize;
 	int phySize;
-	Musician** pMusicians;
+	MusPricePerInst* pMusicians;
 }MusiciansCollection;
+
+
+
 
 typedef struct
 {
