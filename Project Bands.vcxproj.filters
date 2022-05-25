@@ -24,7 +24,7 @@
     <ClCompile Include="filesFunctions.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="listsFunctions.c">
+    <ClCompile Include="supportFunctions.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -38,7 +38,7 @@
     <ClInclude Include="mainh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="lists.h">
+    <ClInclude Include="listsAndSupport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

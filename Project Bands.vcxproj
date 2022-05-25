@@ -140,12 +140,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="filesFunctions.c" />
-    <ClCompile Include="listsFunctions.c" />
+    <ClCompile Include="supportFunctions.c" />
     <ClCompile Include="project_main.c" />
     <ClCompile Include="treesFunctions.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="lists.h" />
+    <ClInclude Include="listsAndSupport.h" />
     <ClInclude Include="mainh.h" />
     <ClInclude Include="files.h" />
     <ClInclude Include="trees.h" />
