@@ -78,6 +78,11 @@ char* getLineOfText()
 		str[lSize] = '\0';
 		c = getchar();
 	}
+	if (str[0] == '\0')
+	{
+		free(str);
+		return NULL;
+	}
 	pSize = lSize + 1;
 	char *tmp = (char*)realloc(str, sizeof(char) * pSize);
 	str = checkAllocation(str);
@@ -85,7 +90,8 @@ char* getLineOfText()
 }
 Date getDate()
 {
-	short hour, min;
+	short hour;
+	float min;
 	char* token, seps[] = SEPS2;
 	Date date;
 	token = strtok(NULL, seps);
@@ -98,7 +104,7 @@ Date getDate()
 	hour = atoi(token);
 	token = strtok(NULL, seps);
 	min = atoi(token);
-	date.hour = (float)hour + (float)(min / 60);
+	date.hour = (float)hour + (min / 100);
 	return date;
 }
 void* checkAllocation(void* ptr)
