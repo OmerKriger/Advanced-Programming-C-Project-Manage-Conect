@@ -14,7 +14,7 @@
 #define NOT_FOUND -1
 #define SAME_STRING res == 0
 #define STR1_GREATER res > 0
-#define SPACES 9
+#define SPACES 10
 #define IMPORTANT 1
 // Functions Declerations
 void* checkAllocation(void* ptr);
@@ -95,7 +95,7 @@ typedef struct ConcertInstrumentList
 	CINode* tail;
 }CIList;
 
-typedef struct
+typedef struct concertData
 {
 	Date date_of_concert;
 	char* name;
