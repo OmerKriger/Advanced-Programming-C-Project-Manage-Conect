@@ -1,4 +1,7 @@
-// defines
+/*
+the main header file of the program with all defines and structs of the program
+*/
+// includes
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdlib.h>
 #include <string.h>
@@ -68,9 +71,6 @@ typedef struct
 	int phySize;
 	MusPricePerInst* pMusicians;
 }MusiciansCollection;
-
-
-
 
 typedef struct
 {

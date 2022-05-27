@@ -1,98 +1,99 @@
 #include "trees.h"
-#include "listsAndSupport.h"
-#include "files.h"
+#include "lists.h"
+#include "filesAndSupport.h"
 // Functions:
 
-InstrumentTree BuildInstTree(char* fileName, unsigned short* instAmount)
+InstrumentTree BuildInstTree(char* fileName, unsigned short* instAmount) // this function get filename of instruments file and return tree of instruments and amount of instruments
 {
 	FILE* f = fopen(fileName, "r"); // file opening for reading
-	checkOpenFile(f);
-	InstrumentTree tr;
+	checkOpenFile(f); // check file openned correct
+	InstrumentTree tr; // create local tree
 	CreateEmptyTree(&tr); // make root null
 	char* insturmentName = getLineFromFile(f); // get one instrument from the file.
 	unsigned short counterIDs = 0;
 	while (insturmentName != NULL) // run till the end of file
 	{
-		InsertInstrument(&tr, insturmentName, counterIDs);
+		InsertInstrument(&tr, insturmentName, counterIDs); // inserting instrument to the tree
 		insturmentName = getLineFromFile(f); // get the name of the next instrument
-		counterIDs++;
+		counterIDs++; // increase count by one instrument
 	}
-	*instAmount = counterIDs;
+	*instAmount = counterIDs; // save the amount by parameter
 	fclose(f); // file closing
-	return tr;
+	return tr; // return the tree
 }
-TreeNode* FindPlaceForInstrument(TreeNode* node, char* instrument)
+TreeNode* FindPlaceForInstrument(TreeNode* node, char* instrument) // this function find the place for instruments for insert the son
 {
-	if (strcmp(node->instrument, instrument) > 0)
-	{
-		if (node->left == NULL)
+	if (strcmp(node->instrument, instrument) > 0) // check if instrument we look for in left or right
+	{ // left
+		if (node->left == NULL) // check if is null
+			return node; // return the node
+		else
+			return FindPlaceForInstrument(node->left, instrument); // if isnt null recursive call to seach left son
+	}
+	else 
+	{ // right
+		if (node->right == NULL) //  check if is null
 			return node;
 		else
-			return FindPlaceForInstrument(node->left, instrument);
-	}
-	else
-	{
-		if (node->right == NULL)
-			return node;
-		else
-			return FindPlaceForInstrument(node->right, instrument);
+			return FindPlaceForInstrument(node->right, instrument); // if isnt null recursive call to seach right son
 	}
 }
-void InsertInstrument(InstrumentTree* tr, char* insturment,unsigned short id)
+void InsertInstrument(InstrumentTree* tr, char* insturment,unsigned short id) // this function get tree and instrument and id
 {
-	TreeNode* father;
-	TreeNode* newNode = (TreeNode*)malloc(sizeof(TreeNode));
-	newNode = checkAllocation(newNode);
+	TreeNode* father; 
+	TreeNode* newNode = (TreeNode*)malloc(sizeof(TreeNode)); // allocate the new node
+	newNode = checkAllocation(newNode); // check allocation
+	// put details of new node
 	newNode->InsId = id;
 	newNode->instrument = insturment;
 	newNode->left = newNode->right = NULL;
 	
-	if (isEmptyTree(*tr))
+	if (isEmptyTree(*tr)) 
 	{
-		newNode->father = NULL;
-		tr->root = newNode;
+		newNode->father = NULL; // mark father null
+		tr->root = newNode; // make newNode as root
 	}
 	else
-	{
-		father = FindPlaceForInstrument(tr->root, insturment);
-		newNode->father = father;
-		if (strcmp(father->instrument, insturment) > 0)
+	{ // if tree isnt empty
+		father = FindPlaceForInstrument(tr->root, insturment); // find the father of instrument required
+		newNode->father = father; // make new node father the father we found
+		if (strcmp(father->instrument, insturment) > 0) // find where put the newNode (left or right)
 			father->left = newNode;
 		else
 			father->right = newNode;
 	}
 }
-int findInsId(InstrumentTree tree, char* instrument)
+int findInsId(InstrumentTree tree, char* instrument)  // cover function for find instrument id
 {
-	return findInsIdRec(tree.root, instrument);
+	return findInsIdRec(tree.root, instrument); // find instrument recursive call
 }
-int findInsIdRec(TreeNode* root, char* instrument) // ABCDEFGHIJKLMNOPQRSTUVWXYZ
+int findInsIdRec(TreeNode* root, char* instrument) // this function find instrument id by recursive call
 {
-	if (root == NULL)
-		return NOT_FOUND;
-	else
+	if (root == NULL) // if root null (stop condition)
+		return NOT_FOUND; // not found
+	else 
 	{                           
-		int res = strcmp(instrument,root->instrument);
-		if (SAME_STRING)
-			return root->InsId;
-		else if (STR1_GREATER)
+		int res = strcmp(instrument,root->instrument);// compare root instrument to instrument to look
+		if (SAME_STRING) // found the instrument
+			return root->InsId; // return instrument id
+		else if (STR1_GREATER) 
 			return findInsIdRec(root->right, instrument); // right Rec
 		else
 			return findInsIdRec(root->left, instrument); // left Rec
 	}
 }
-void CreateEmptyTree(InstrumentTree* tr)
+void CreateEmptyTree(InstrumentTree* tr) // create empty tree // return null in root
 {
 	tr->root = NULL;
 }
-bool isEmptyTree(InstrumentTree tr)
+bool isEmptyTree(InstrumentTree tr) // check if tree is empty
 {
 	if (tr.root == NULL)
-		return true;
+		return true; // return true if is empty
 	else
-		return false;
+		return false; // return false if isnt empty
 }
-Musician** BuildMusiciansGroup(char fileName[], InstrumentTree InstTree)
+Musician** BuildMusiciansGroup(char fileName[], InstrumentTree InstTree) // this function create group of musicians(array of pointers to musicians)
 {
 	FILE* f = fopen(fileName, "r"); // open the file of the musicians
 	checkOpenFile(f);
@@ -125,16 +126,15 @@ Musician* CreateMusician(char* line, InstrumentTree InstTree)
 	Musician* musician = (Musician*)malloc(sizeof(Musician));
 	musician = checkAllocation(musician);
 	musician->name = getMusicianName(&token, line, InstTree); // get the name from the string of line and return token the first instrument
-	makeEmptyList(&(musician->instruments));
-	CreateMPIList(token, line, InstTree, &(musician->instruments));
+	musician->instruments.head = musician->instruments.tail = NULL; // make the list empty
+	CreateMPIList(token, line, InstTree, &(musician->instruments)); // create MPI list for this musician
 	return musician;
 }
-char** getMusicianName(char** pToken, char* line, InstrumentTree InstTree) // maybe need get it shorter ??????
+char** getMusicianName(char** pToken, char* line, InstrumentTree InstTree) // this function get name of musician from line of text
 {
 	char seps[] = SEPS, * token = NULL;
 	int instrumentID = NOT_FOUND, pSize = 2, lSize = 0;
-	char** fullName = (char**)malloc(sizeof(char*) * pSize);
-	fullName = checkAllocation(fullName);
+	char** fullName = checkAllocation( (char**)malloc(sizeof(char*) * pSize) ); // allocate array and check allocation
 	token = strtok(line, seps); // grapping the first
 	checkSTRtok(token); // check grapping 
 	while (lSize <= 1 || instrumentID == NOT_FOUND)
@@ -142,37 +142,20 @@ char** getMusicianName(char** pToken, char* line, InstrumentTree InstTree) // ma
 		if (pSize == lSize + 1)
 		{
 			pSize *= 2;
-			char** tmp = realloc(fullName, sizeof(char*) * pSize);
-			fullName = checkAllocation(tmp);
+			fullName = checkAllocation(realloc(fullName, sizeof(char*) * pSize)); // re allocation and check allocation
 		}
-		char* name = _strdup(token);
-		name = checkAllocation(name);
-		fullName[lSize] = name;
+		char* name = checkAllocation(_strdup(token)); // duplicate the name
+		fullName[lSize] = name; 
 		lSize++;
-		fullName[lSize] = NULL;
+		fullName[lSize] = NULL; // mark the end
 		token = strtok(NULL, seps); // grapping next name/instrument in line
 		checkSTRtok(token);
-		if (lSize > 1)
+		if (lSize > 1) 
 			instrumentID = findInsId(InstTree, token); // check if the next grapping is instrument
 	}
 	pSize = lSize + 1;
-	char** tmp = realloc(fullName, sizeof(char*) * pSize);
-	fullName = checkAllocation(tmp);
-	*pToken = token;
-	return fullName;
-}
-
-// support functions
-void printTreeInorder(InstrumentTree Tr)
-{
-	printTreeInorderRec(Tr.root);
-}
-void printTreeInorderRec(TreeNode* root)
-{
-	if (root == NULL)
-		return;
-	printTreeInorderRec(root->left);
-	printf("| %s (ID:%d) |", root->instrument, root->InsId);
-	printTreeInorderRec(root->right);
+	fullName = checkAllocation(realloc(fullName, sizeof(char*) * pSize) );
+	*pToken = token; // save token for next step
+	return fullName; // return array of full name 
 }
 

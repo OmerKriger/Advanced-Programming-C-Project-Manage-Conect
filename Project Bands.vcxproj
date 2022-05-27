@@ -139,15 +139,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="filesFunctions.c" />
-    <ClCompile Include="supportFunctions.c" />
+    <ClCompile Include="filesAndSupport.c" />
+    <ClCompile Include="listsFunctions.c" />
     <ClCompile Include="project_main.c" />
     <ClCompile Include="treesFunctions.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="listsAndSupport.h" />
+    <ClInclude Include="lists.h" />
     <ClInclude Include="mainh.h" />
-    <ClInclude Include="files.h" />
+    <ClInclude Include="filesAndSupport.h" />
     <ClInclude Include="trees.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

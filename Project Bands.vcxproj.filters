@@ -21,10 +21,10 @@
     <ClCompile Include="treesFunctions.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="filesFunctions.c">
+    <ClCompile Include="filesAndSupport.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="supportFunctions.c">
+    <ClCompile Include="listsFunctions.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,13 +32,13 @@
     <ClInclude Include="trees.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="files.h">
+    <ClInclude Include="filesAndSupport.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="mainh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="listsAndSupport.h">
+    <ClInclude Include="lists.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

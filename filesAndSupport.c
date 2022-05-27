@@ -1,152 +1,56 @@
-#include "listsAndSupport.h"
-#include "trees.h"
-
-void* checkAllocation(void* ptr)
+#include "filesAndSupport.h"
+#include "lists.h"
+#define MAX_SIZE_OF_LINE 150
+// functions
+char* getLineFromFile(FILE* f) // this function get file pointer and get one line from the file
 {
-	if (ptr == NULL)
+	char* lineResult;
+	char line[MAX_SIZE_OF_LINE+1];
+	if (fgets(line, MAX_SIZE_OF_LINE + 1, f) != NULL) // check if we in EOF
 	{
-		printf("Error!");
-		exit(1);
-	}
-	else return ptr;
-}
-
-void checkSTRtok(char* ptr)
-{
-	if (ptr == NULL)
-	{
-		printf("error in creating musician");
-		exit(1);
-	}
-}
-
-void CreateMPIList(char* token, char* line, InstrumentTree InstTree, MPIList* list)
-{
-	char seps[] = SEPS;
-	int instID, tmp;
-	float price;
-	while (token != NULL)
-	{
-		instID = findInsId(InstTree, token);
-		token = strtok(NULL, seps);
-		checkSTRtok(token);
-		if (sscanf(token, "%d", &tmp) != 1)
-		{
-			printf("ERROR!, in creating MPIList");
-			exit(1);
-		}
-		price = (float)tmp;
-		MPI* node = CreateMPInode(instID, price);
-		appendMPINodeToList(list, node);
-
-		token = strtok(NULL, seps); // get the next instrument
-	}
-	free(line); // we finished with the this musician and can free the data line
-}
-
-CIList createCIList(InstrumentTree tr)
-{
-	CIList list;
-	list.head = list.tail = NULL;
-	char* token, seps[] = SEPS2, * name;
-	token = strtok(NULL, seps);
-	while (token != NULL)
-	{
-		name = _strdup(token);
-		int instID = findInsId(tr, token);
-		token = strtok(NULL, seps);
-		int amount = atoi(token);
-		token = strtok(NULL, seps);
-		char importance = atoi(token);
-		CINode* node = createCINode(instID, amount, importance, name);
-		appendCINodeToList(&list,node);
-		token = strtok(NULL, seps);
-	}
-	return list;
-}
-
-MPI* CreateMPInode(int ID, float price)
-{
-	MPI* newNode = (MPI*)malloc(sizeof(MPI));
-	newNode = checkAllocation(newNode);
-	newNode->insId = ID;
-	newNode->next = newNode->previous = NULL;
-	newNode->price = price;
-	return newNode;
-}
-
-CINode* createCINode(int id,int amount,char importance,char* name)
-{
-	CINode* node = (CINode*)malloc(sizeof(CINode));
-	node = checkAllocation(node);
-	node->importance = importance;
-	node->inst = id;
-	node->num = amount;
-	node->insName = name;
-	node->next = NULL;
-	return node;
-}
-
-void appendMPINodeToList(MPIList* list, MPI* node) // weird warning need to look
-{
-	if (isEmptyList(list))
-	{
-		list->head = list->tail = node;
+		int len = (int)strlen(line); // check len of string
+		if (line[len - 1] == '\n') // replace \n in \0
+			line[len - 1] = '\0';
+		lineResult = checkAllocation(_strdup(line)); // duplicate the line and check allocation
 	}
 	else
-	{
-		list->tail->next = node;
-		node->previous = list->tail;
-		list->tail = node;
-	}
+		return NULL; // if is EOF return EOF
+	return lineResult; // return line result
 }
-
-void appendCINodeToList(CIList* list, CINode* node)
+bool checkFilePaths(int argc, char** argv, int RequiredFiles) // checking if there are the amount of files name\path required
 {
-	if (list->head == NULL || list->tail == NULL)
-	{
-		list->head = list->tail = node;
-	}
-	else
-	{
-		list->tail->next = node;
-		list->tail = node;
-	}
-}
-
-void makeEmptyList(MPIList* list)
-{
-	list->head = list->tail = NULL;
-}
-
-bool isEmptyList(MPIList* list)
-{
-	if (list->head == NULL || list->tail == NULL)
+	if (argc - 1 == RequiredFiles)
 		return true;
 	else
 		return false;
 }
+void checkOpenFile(FILE* f) // check if file opnned correct
+{
+	if (f == NULL)
+	{
+		printf("Opening file failed.");
+		exit(1);
+	}
+}
 
-MusiciansCollection* BuildMusiciansCollection(Musician** musicianGroup, unsigned short instAmount)
+// support functions
+MusiciansCollection* BuildMusiciansCollection(Musician** musicianGroup, unsigned short instAmount) // this function build musicians collections every cell in array there is pointers to musicians list play in specific instrument
 {
 	// a function to build an array of arrays of pionters to musicians.
 	MusiciansCollection* musicianCollection = (MusiciansCollection*)malloc(sizeof(MusiciansCollection) * instAmount);
 	musicianCollection = checkAllocation(musicianCollection);
-
 	int i = 0;
 	musicianCollection = initializeArray(musicianCollection, instAmount);
-
 	while (musicianGroup[i] != NULL) // check how many players for every instrument.
 	{
 		MPI* curr = musicianGroup[i]->instruments.head;
 		while (curr != NULL)
 		{
 			int collectionInd = curr->insId;
-
 			if (musicianCollection[collectionInd].phySize == musicianCollection[collectionInd].logSize)
 			{
 				musicianCollection[collectionInd].phySize *= 2;
-				MusPricePerInst* temp = (MusPricePerInst*)realloc(musicianCollection[collectionInd].pMusicians, sizeof(MusPricePerInst) * musicianCollection[collectionInd].phySize); 
+				MusPricePerInst* temp = (MusPricePerInst*)realloc(musicianCollection[collectionInd].pMusicians, sizeof(MusPricePerInst) * musicianCollection[collectionInd].phySize);
 				musicianCollection[collectionInd].pMusicians = checkAllocation(temp);
 			}
 			int logSize = musicianCollection[collectionInd].logSize;
@@ -161,7 +65,7 @@ MusiciansCollection* BuildMusiciansCollection(Musician** musicianGroup, unsigned
 	return musicianCollection;
 }
 
-MusiciansCollection* initializeArray(MusiciansCollection* collection, unsigned short size)
+MusiciansCollection* initializeArray(MusiciansCollection* collection, unsigned short size) 
 {
 	// a function to initialize the values in musicCollection.
 	int i;
@@ -190,64 +94,49 @@ MusiciansCollection* tightenTheArr(MusiciansCollection* collection, unsigned sho
 	return collection;
 }
 
-void getShow(InstrumentTree InstTree, Musician** MusiciansGroup, MusiciansCollection* mCollection)
+void getShow(InstrumentTree InstTree, Musician** MusiciansGroup, MusiciansCollection* mCollection) // this function get data struct and check if concerts able 
 {
 	char* str;
 	Concert concert;
-	str = getLineOfText();
-	while (str != NULL)
+	str = getLineOfText(); // get requires from user (NULL = empty line)
+	while (str != NULL) // run till str NULL
 	{
-		concert = getConcertData(str, InstTree);
-		initializeIsChosen(MusiciansGroup);
-		reserveMusicians(mCollection, concert);
-		str = getLineOfText();
+		concert = getConcertData(str, InstTree); // get concert data
+		initializeIsChosen(MusiciansGroup); // mark all musicians for not chosen
+		reserveMusicians(mCollection, concert); // check reserve musician for this concert
+		str = getLineOfText(); // get next requires for next concert
 	}
 }
 
-Concert getConcertData(char* data, InstrumentTree InstTree)
-{
-	Concert concert;
-	char* token, seps[] = SEPS2;
-	token = strtok(data, seps);
-	concert.name = _strdup(token); // copy the name of conert
-	concert.date_of_concert = getDate();
-	concert.instruments = createCIList(InstTree);
-	free(data);
-	return concert;
-}
-
-char* getLineOfText()
+char* getLineOfText() // this function get line from text
 {
 	short pSize = 1, lSize = 0;
-	char* str = (char*)malloc(sizeof(char) * pSize);
-	str = checkAllocation(str);
+	char* str = checkAllocation((char*)malloc(sizeof(char) * pSize)); // allocate and check allocation
 	str[0] = '\0';
-	char c = getchar();
-	while (c != '\n')
+	char c = getchar(); // get text char by char
+	while (c != '\n') // stop in enter
 	{
-		if (lSize + 1 == pSize)
+		if (lSize + 1 == pSize) 
 		{
 			pSize *= 2;
-			char* tmp = (char*)realloc(str, sizeof(char) * pSize);
-			str = checkAllocation(tmp);
+			str = checkAllocation((char*)realloc(str, sizeof(char) * pSize));
 		}
 		str[lSize] = c;
 		lSize++;
 		str[lSize] = '\0';
 		c = getchar();
 	}
-	if (str[0] == '\0')
+	if (str[0] == '\0') // if is empty line
 	{
-		free(str);
-		return NULL;
+		free(str); // free the allocate for line
+		return NULL; // return NULL
 	}
 	pSize = lSize + 1;
-	char* tmp = (char*)realloc(str, sizeof(char) * pSize);
-	str = checkAllocation(str);
-	return str;
+	str = checkAllocation((char*)realloc(str, sizeof(char) * pSize) ); // reallocate and check allocation
+	return str; // return the line
 }
 
-Date getDate()
+Date getDate() // this function get date and time of concert
 {
 	int hour, min;
 	char* token, seps[] = SEPS2;
@@ -270,8 +159,8 @@ void sortMusicianCollection(MusiciansCollection* mCollection, int instAmount)
 {
 	// sorting all of the musicians arrays in mCollection.
 	int i;
-	for (i = 0; i < instAmount; i++)
-		qsort(mCollection[i].pMusicians, mCollection[i].logSize, sizeof(MusPricePerInst), comparePrices);
+	for (i = 0; i < instAmount; i++) // sorting every array of arrays
+		qsort(mCollection[i].pMusicians, mCollection[i].logSize, sizeof(MusPricePerInst), comparePrices); // sorting by qsort
 }
 
 int comparePrices(MusPricePerInst* elem1, MusPricePerInst* elem2)
@@ -280,7 +169,7 @@ int comparePrices(MusPricePerInst* elem1, MusPricePerInst* elem2)
 	return (int)(elem1->price - elem2->price);
 }
 
-void reserveMusicians(MusiciansCollection* mCollection, Concert concert)
+void reserveMusicians(MusiciansCollection* mCollection, Concert concert) // this function check if show could happen and reserve all the musicians and print in the end
 {
 	int totalPrice = 0; // save total price of show
 	unsigned short fD_lSize = 0, fD_pSize = 1; // fullDetails logic and physic sizes
@@ -316,22 +205,22 @@ void reserveMusicians(MusiciansCollection* mCollection, Concert concert)
 		printf("Could not find musicians for the concert %s\n", concert.name); // declere that show failed
 	else
 	{ // print the details about the show
-		fullDetails = checkAllocation( (char**)realloc(fullDetails, sizeof(char*) * (fD_lSize)) );
+		fullDetails = checkAllocation((char**)realloc(fullDetails, sizeof(char*) * (fD_lSize)));
 		printConcertsDetails(concert, fullDetails, totalPrice, fD_lSize); // print details and release
 	}
 }
 
-void freeShowDetails(char** strArr, int size)
+void freeShowDetails(char** strArr, int size) // free show details after print or if show cannot happen
 {
-	for(int i = size-1; 0 <= i; i--)
+	for (int i = size - 1; 0 <= i; i--)
 		free(strArr[i]);
 	free(strArr);
 }
 
-char* getDetailsOfMusicians(int size, MusPricePerInst* pMusicians, CINode* InsRequired, int* totalPrice)
+char* getDetailsOfMusicians(int size, MusPricePerInst* pMusicians, CINode* InsRequired, int* totalPrice) // this function get the musicians details for show
 {
-	unsigned short counter = 0, i, d_pSize = 1, d_lSize=1;
-	char* strDetails = checkAllocation( (char*)malloc(d_pSize * sizeof(char)));  // allocate basic size for start and check allocate
+	unsigned short counter = 0, i, d_pSize = 1, d_lSize = 1;
+	char* strDetails = checkAllocation((char*)malloc(d_pSize * sizeof(char)));  // allocate basic size for start and check allocate
 	strDetails[0] = '\0'; // set the first char for \0 for strcat later
 	if (InsRequired->importance == IMPORTANT) // define if start from the start or end of array depend in importance of instrument
 		i = size - 1; else i = 0;
@@ -339,7 +228,7 @@ char* getDetailsOfMusicians(int size, MusPricePerInst* pMusicians, CINode* InsRe
 	{
 		if (!(pMusicians[i].pForMusician->isChosen))
 		{
-			getDataOfMusician(InsRequired, pMusicians[i], &counter,&d_lSize, &d_pSize,&strDetails,totalPrice);
+			getDataOfMusician(InsRequired, pMusicians[i], &counter, &d_lSize, &d_pSize, &strDetails, totalPrice);
 		}
 		if (InsRequired->importance == IMPORTANT) // skip for next index to check if importance insturment increase to next index if isnt decrease index by 1
 			i--; else i++;
@@ -349,57 +238,45 @@ char* getDetailsOfMusicians(int size, MusPricePerInst* pMusicians, CINode* InsRe
 		free(strDetails); // release what we found
 		return NULL; // return NULL for know the mission failed
 	}
-	return (checkAllocation( realloc(strDetails, sizeof(char) * d_pSize) ) ); // return the pointer to details of musicians we found after realloc titer and check allocations 
+	return (checkAllocation(realloc(strDetails, sizeof(char) * d_pSize))); // return the pointer to details of musicians we found after realloc titer and check allocations 
 }
 
 void getDataOfMusician(CINode* InsRequired, MusPricePerInst musician, unsigned short* counter, unsigned short* d_lSize, unsigned short* d_pSize, char** strDetails, int* totalPrice)
-{
-	unsigned short len,totalLen;
+{ // this funtion get the details of one musician for printing
+	unsigned short len, totalLen;
 	musician.pForMusician->isChosen = true; // mark the musician as chosen for show
 	(*counter)++; // count the musician in counter
 	char* name = musicanName(musician.pForMusician->name, &len); // get the musician name and return the len of his name
 	*totalPrice += (int)musician.price; // add price of instruemnt to this musician
 	totalLen = (int)(len + countDigits((int)(musician.price)) + strlen(InsRequired->insName) + SPACES); // calculate the totallen of attach string for allocate
-	char* attach = checkAllocation((char*)malloc(sizeof(char) * totalLen+1)); // allocate and check allocate
+	char* attach = checkAllocation((char*)malloc(sizeof(char) * totalLen + 1)); // allocate and check allocate
 	(void)sprintf(attach, "%s - %s (%d), ", name, InsRequired->insName, (int)musician.price); // make the attach string
 	free(name); // release the name of musician we kept
-	unifyStrings(strDetails, attach, d_pSize, d_lSize, totalLen);
+	unifyStrings(strDetails, attach, d_pSize, d_lSize, totalLen); // link the string
 }
 
-unsigned int countDigits(unsigned int num)
+unsigned int countDigits(unsigned int num) // this function count how many digits in number
 {
 	unsigned int count = 1;
 	while (num / 10 == 0) {
 		num /= 10;
 		count++;
 	}
-	return count;		
+	return count;
 }
 
-void unifyStrings(char** dest, char* src, unsigned short* d_pSize, unsigned short* d_lSize, unsigned short s_size)
+void unifyStrings(char** dest, char* src, unsigned short* d_pSize, unsigned short* d_lSize, unsigned short s_size) // this function take two strings and make one string
 {
 	while (*d_pSize < *d_lSize + s_size) // double the size of dest string till there are enough space for both string
 		*d_pSize *= 2;
-	char* allocate = (char*)realloc(*dest, sizeof(char) *(*d_pSize)); // allocate
+	char* allocate = (char*)realloc(*dest, sizeof(char) * (*d_pSize)); // allocate
 	*dest = checkAllocation(allocate);
 	strcat(*dest, src); // unify the strings to one
 	*d_lSize = *d_lSize + s_size; // save the new size 
 	free(src); // free the src string
 }
 
-int searchInstruemtPrice(MPI* node, unsigned short id)
-{
-	MPI* currNode = node;
-	while (currNode != NULL)
-	{
-		if (currNode->insId == id)
-			return (int)currNode->price;
-		currNode = currNode->next;
-	}
-	return NOT_FOUND;
-}
-
-void printConcertsDetails(Concert concert, char** details, int price, unsigned short fD_size)
+void printConcertsDetails(Concert concert, char** details, int price, unsigned short fD_size) // this function print all the details of concert
 {
 	printf("%s %02d %02d %04d ", concert.name, concert.date_of_concert.day, concert.date_of_concert.month, concert.date_of_concert.year);
 	int hour = (int)concert.date_of_concert.hour, minutes = (((int)(concert.date_of_concert.hour * 100)) % 100);
@@ -407,10 +284,10 @@ void printConcertsDetails(Concert concert, char** details, int price, unsigned s
 	for (int i = 0; i < fD_size; i++)
 		printf("%s", details[i]);
 	printf("\b\b. Total cost: %d.\n", price);
-	freeShowDetails(details,fD_size);
+	freeShowDetails(details, fD_size);
 }
 
-void initializeIsChosen(Musician** musicians)
+void initializeIsChosen(Musician** musicians) // this function mark all the musician as free to be in next concert we check
 {
 	int i = 0;
 	while (musicians[i] != NULL)
@@ -420,13 +297,13 @@ void initializeIsChosen(Musician** musicians)
 	}
 }
 
-char* musicanName(char** arr, unsigned short* size)
+char* musicanName(char** arr, unsigned short* size) // this function bring from array of full name one string of full name
 {
 
 	int i = 0;
 	char* str;
 	unsigned short int strSize = 0;
-	while (arr[i] != NULL)
+	while (arr[i] != NULL) // check the len of full name for allocate
 	{
 		int len = (int)strlen(arr[i]);
 		strSize = strSize + len + 1; // +1 for space or \0
@@ -438,7 +315,7 @@ char* musicanName(char** arr, unsigned short* size)
 	checkAllocation(&arr[FIRST_NAME]);
 	strcpy(str, arr[FIRST_NAME]);
 	i = 1;
-	while (arr[i] != NULL)
+	while (arr[i] != NULL) // copy the name to the string
 	{
 		strcat(str, " "); // space
 		strcat(str, arr[i]);
@@ -447,5 +324,5 @@ char* musicanName(char** arr, unsigned short* size)
 	}
 	str[strSize - 1] = '\0';
 	*size = strSize;
-	return str;
+	return str; // return the name
 }

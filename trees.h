@@ -1,5 +1,9 @@
 #include "mainh.h"
 
+/*
+Header file for tree functions
+*/
+
 // functions decleration
 int findInsId(InstrumentTree tree, char* instrument);
 int findInsIdRec(TreeNode* root, char* instrument);
@@ -11,7 +15,3 @@ TreeNode* FindPlaceForInstrument(TreeNode* node, char* instrument);
 Musician* CreateMusician(char* line, InstrumentTree InstTree);
 char** getMusicianName(char** pToken, char* line, InstrumentTree InstTree);
 Musician** BuildMusiciansGroup(char fileName[], InstrumentTree InstTree);
-
-// test functions
-void printTreeInorder(InstrumentTree Tr);
-void printTreeInorderRec(TreeNode* root);
