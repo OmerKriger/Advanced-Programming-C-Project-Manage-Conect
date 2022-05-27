@@ -142,25 +142,35 @@ Concert getConcertData(char* data, InstrumentTree InstTree) // this function get
 
 void freeMusiciansGroup(Musician** MusicianGroup)
 {
-	int i = 0;
-	if (MusicianGroup != NULL)
+	int i = 1;
+	while (MusicianGroup[i] != NULL)
 	{
-		while (MusicianGroup[i] != NULL)
-		{
-			freeMPIList(MusicianGroup[i]->instruments);
-			free(MusicianGroup[i]->name);
-			free(MusicianGroup[i]);
-			i++;
-		}
-		free(MusicianGroup);
+		freeMPIList(MusicianGroup[i]->instruments);
+		freeFullName(MusicianGroup[i]->name);
+		free(MusicianGroup[i]);
+		i++;
 	}
+	freeMPIList(MusicianGroup[0]->instruments);
+	freeFullName(MusicianGroup[0]->name);
+	free(MusicianGroup[0]);
+	free(MusicianGroup);
 }
 
+void freeFullName(char** fullName)
+{
+	int i = 1;
+	while (fullName[i] != NULL)
+	{
+		free(fullName[i]);
+		i++;
+	}
+	free(fullName[0]);
+	free(fullName);
+}
 
 void freeMPIList(MPIList lst)
 {
 	MPI* curr = lst.head, * next;
-
 	while (curr != NULL)
 	{
 		next = curr->next;

@@ -15,3 +15,4 @@ void appendCINodeToList(CIList* list, CINode* node);
 Concert getConcertData(char* data, InstrumentTree InstTree);
 void freeMusiciansGroup(Musician** MusicianGroup);
 void freeMPIList(MPIList lst);
+void freeFullName(char** fullName);

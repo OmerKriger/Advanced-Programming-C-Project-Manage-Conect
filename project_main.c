@@ -39,6 +39,7 @@ void main(int argc, char* argv[]) // the main function get the name of instrumen
 	freeAll(InstTree, MusiciansGroup, musicianCollection, instAmount);
 
 	// check memory leaks
+
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
 	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
 	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);

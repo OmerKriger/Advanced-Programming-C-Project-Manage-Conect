@@ -2,6 +2,8 @@
 #include "lists.h"
 #include "trees.h"
 #define MAX_SIZE_OF_LINE 150
+#define ONE 1
+#define ALL 0
 // functions
 char* getLineFromFile(FILE* f) // this function get file pointer and get one line from the file
 {
@@ -177,7 +179,7 @@ void reserveMusicians(MusiciansCollection* mCollection, Concert concert) // this
 	char* reservedDetailsForIns = NULL, ** fullDetails = NULL, ** tmp = NULL; // pointers to strings and array of strings
 	fullDetails = checkAllocation((char**)malloc(sizeof(char*) * fD_pSize)); // allocate the array for start and check allocate
 	bool showReserveFail = false; // flag if show reserve failed or not
-	CINode* InsRequired = concert.instruments.head; // set current instruemt required for search
+	CINode* tmpReq, *InsRequired = concert.instruments.head; // set current instruemt required for search
 	while (InsRequired != NULL)
 	{
 		if (fD_lSize == fD_pSize) // if fullDetails array full make it bigger by 2
@@ -193,22 +195,38 @@ void reserveMusicians(MusiciansCollection* mCollection, Concert concert) // this
 		{ // if failed
 			showReserveFail = true; // mark that planning failed
 			freeShowDetails(fullDetails, fD_lSize); // release all the details we kept about musicians for show
+			freeRequires(InsRequired, ALL);
 			break; // finish the search
 		}
 		else // if not fail
 		{
 			fullDetails[fD_lSize] = reservedDetailsForIns;
 			fD_lSize++;
+			tmpReq = InsRequired;
 			InsRequired = InsRequired->next; // skip to the next instruemnt required
+			freeRequires(tmpReq,ONE);
 		}
 	}
+	
 	if (showReserveFail == true)
+	{
 		printf("Could not find musicians for the concert %s\n", concert.name); // declere that show failed
+		free(concert.name);
+	}
 	else
 	{ // print the details about the show
 		fullDetails = checkAllocation((char**)realloc(fullDetails, sizeof(char*) * (fD_lSize)));
 		printConcertsDetails(concert, fullDetails, totalPrice, fD_lSize); // print details and release
 	}
+}
+
+void freeRequires(CINode* InsRequired,short int deleteFormat)
+{
+	do
+	{
+		free(InsRequired->insName);
+		InsRequired = InsRequired->next;
+	} while (deleteFormat == ALL && InsRequired != NULL);
 }
 
 void freeShowDetails(char** strArr, int size) // free show details after print or if show cannot happen
@@ -285,6 +303,7 @@ void printConcertsDetails(Concert concert, char** details, int price, unsigned s
 	for (int i = 0; i < fD_size; i++)
 		printf("%s", details[i]);
 	printf("\b\b. Total cost: %d.\n", price);
+	free(concert.name);
 	freeShowDetails(details, fD_size);
 }
 
@@ -328,16 +347,15 @@ char* musicanName(char** arr, unsigned short* size) // this function bring from 
 	return str; // return the name
 }
 
-
 void freeMusicianCollection(MusiciansCollection* musicianCollection, int instAmount)
 {
-	int i, j;
-	for (i = 0; i < instAmount; i++)
+	int i;
+	MusPricePerInst* curr;
+	for (i = instAmount - 1; 0 <= i; i--)
 	{
-		if (musicianCollection[i].pMusicians != NULL)
-			free(musicianCollection[i].pMusicians);
+		curr = musicianCollection[i].pMusicians;
+		free(curr);
 	}
-
 	free(musicianCollection);
 }
 

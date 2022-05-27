@@ -29,5 +29,6 @@ int searchInstruemtPrice(MPI* node, unsigned short id);
 char* getDetailsOfMusicians(int size, MusPricePerInst* pMusicians, CINode* InsRequired, int* totalPrice);
 int comparePrices(MusPricePerInst* elem1, MusPricePerInst* elem2);
 void freeShowDetails(char** strArr, int size);
+void freeRequires(CINode* InsRequired, short int deleteFormat);
 void freeMusicianCollection(MusiciansCollection* musicianCollection, int instAmount);
 void freeAll(InstrumentTree instTree, Musician** MusiciansGroup, MusiciansCollection* musicianCollection, int instAmount);
