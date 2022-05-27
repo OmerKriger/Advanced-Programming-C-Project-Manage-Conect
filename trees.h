@@ -15,3 +15,6 @@ TreeNode* FindPlaceForInstrument(TreeNode* node, char* instrument);
 Musician* CreateMusician(char* line, InstrumentTree InstTree);
 char** getMusicianName(char** pToken, char* line, InstrumentTree InstTree);
 Musician** BuildMusiciansGroup(char fileName[], InstrumentTree InstTree);
+void freeInsTree(InstrumentTree instTree);
+void freeInsTreeRec(TreeNode* root);
+

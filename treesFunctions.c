@@ -159,3 +159,21 @@ char** getMusicianName(char** pToken, char* line, InstrumentTree InstTree) // th
 	return fullName; // return array of full name 
 }
 
+void freeInsTree(InstrumentTree instTree)
+{
+	freeInsTreeRec(instTree.root);
+}
+
+void freeInsTreeRec(TreeNode* root)
+{
+	if (root == NULL)
+		return;
+	else
+	{
+		freeInsTreeRec(root->left);
+		freeInsTreeRec(root->right);
+		free(root->instrument);
+		free(root);
+	}
+}
+

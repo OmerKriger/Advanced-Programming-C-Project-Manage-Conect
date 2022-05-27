@@ -1,5 +1,6 @@
 #include "filesAndSupport.h"
 #include "lists.h"
+#include "trees.h"
 #define MAX_SIZE_OF_LINE 150
 // functions
 char* getLineFromFile(FILE* f) // this function get file pointer and get one line from the file
@@ -279,7 +280,7 @@ void unifyStrings(char** dest, char* src, unsigned short* d_pSize, unsigned shor
 void printConcertsDetails(Concert concert, char** details, int price, unsigned short fD_size) // this function print all the details of concert
 {
 	printf("%s %02d %02d %04d ", concert.name, concert.date_of_concert.day, concert.date_of_concert.month, concert.date_of_concert.year);
-	int hour = (int)concert.date_of_concert.hour, minutes = (((int)(concert.date_of_concert.hour * 100)) % 100);
+	int hour = (int)concert.date_of_concert.hour, minutes = (((int)(concert.date_of_concert.hour * 100)) % 100) * 60 / 100;
 	printf("%02d:%02d: ", hour, minutes);
 	for (int i = 0; i < fD_size; i++)
 		printf("%s", details[i]);
@@ -325,4 +326,24 @@ char* musicanName(char** arr, unsigned short* size) // this function bring from 
 	str[strSize - 1] = '\0';
 	*size = strSize;
 	return str; // return the name
+}
+
+
+void freeMusicianCollection(MusiciansCollection* musicianCollection, int instAmount)
+{
+	int i, j;
+	for (i = 0; i < instAmount; i++)
+	{
+		if (musicianCollection[i].pMusicians != NULL)
+			free(musicianCollection[i].pMusicians);
+	}
+
+	free(musicianCollection);
+}
+
+void freeAll(InstrumentTree instTree, Musician** MusiciansGroup, MusiciansCollection* musicianCollection, int instAmount)
+{
+	freeInsTree(instTree);
+	freeMusiciansGroup(MusiciansGroup);
+	freeMusicianCollection(musicianCollection, instAmount);
 }

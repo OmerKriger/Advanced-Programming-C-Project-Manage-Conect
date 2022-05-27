@@ -4,13 +4,13 @@
 #include <stdlib.h>
 
 /*
-Nir Peretz, ID:
+Nir Peretz, ID: 318382850
 Omer Kriger, ID: 207752536
 */
 
 /*
-The program is system for planning concerts
-The program get 2 files, first file is instruments, second file is Musicians.
+The program is a system for planning concerts
+The program gets 2 files, first file is instruments, second file is Musicians.
 The program take the instrument file and make a tree of instrument sorted lexicographic
 and make from musicians files array with all the details about the musicians like his name, instruments
 get from the user requires for a concert and if there are resources (musicians) for the concert it print the details
@@ -36,7 +36,7 @@ void main(int argc, char* argv[]) // the main function get the name of instrumen
 	sortMusicianCollection(musicianCollection, instAmount); // this sorting the musician collection by price (the musician take the lowest price for instrument show in first and the highest in the end)
 	getShow(InstTree, MusiciansGroup, musicianCollection);  // this function get from user the details required for the show pick-up musicians by the parameters and print the details if have the musicians for the concert.
  
-	// free allocations
+	freeAll(InstTree, MusiciansGroup, musicianCollection, instAmount);
 
 	// check memory leaks
 	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
@@ -47,7 +47,5 @@ void main(int argc, char* argv[]) // the main function get the name of instrumen
 	_CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDOUT);
 	_CrtDumpMemoryLeaks();
 }
-
-
 
 

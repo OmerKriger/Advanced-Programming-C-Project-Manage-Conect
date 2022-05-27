@@ -139,3 +139,32 @@ Concert getConcertData(char* data, InstrumentTree InstTree) // this function get
 	free(data); // release the requires line from user
 	return concert; // return the concert
 }
+
+void freeMusiciansGroup(Musician** MusicianGroup)
+{
+	int i = 0;
+	if (MusicianGroup != NULL)
+	{
+		while (MusicianGroup[i] != NULL)
+		{
+			freeMPIList(MusicianGroup[i]->instruments);
+			free(MusicianGroup[i]->name);
+			free(MusicianGroup[i]);
+			i++;
+		}
+		free(MusicianGroup);
+	}
+}
+
+
+void freeMPIList(MPIList lst)
+{
+	MPI* curr = lst.head, * next;
+
+	while (curr != NULL)
+	{
+		next = curr->next;
+		free(curr);
+		curr = next;
+	}
+}
