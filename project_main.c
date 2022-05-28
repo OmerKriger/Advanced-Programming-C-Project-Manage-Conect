@@ -1,7 +1,3 @@
-// check memory leaks
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#include <stdlib.h>
 
 /*
 Nir Peretz, ID: 318382850
@@ -37,16 +33,6 @@ void main(int argc, char* argv[]) // the main function get the name of instrumen
 	getShow(InstTree, MusiciansGroup, musicianCollection);  // this function get from user the details required for the show pick-up musicians by the parameters and print the details if have the musicians for the concert.
  
 	freeAll(InstTree, MusiciansGroup, musicianCollection, instAmount);
-
-	// check memory leaks
-
-	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
-	_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
-	_CrtSetReportMode(_CRT_ERROR, _CRTDBG_MODE_FILE);
-	_CrtSetReportFile(_CRT_ERROR, _CRTDBG_FILE_STDOUT);
-	_CrtSetReportMode(_CRT_ASSERT, _CRTDBG_MODE_FILE);
-	_CrtSetReportFile(_CRT_ASSERT, _CRTDBG_FILE_STDOUT);
-	_CrtDumpMemoryLeaks();
 }
 
 

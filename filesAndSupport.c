@@ -222,10 +222,13 @@ void reserveMusicians(MusiciansCollection* mCollection, Concert concert) // this
 
 void freeRequires(CINode* InsRequired,short int deleteFormat)
 {
+	CINode* tmp;
 	do
 	{
 		free(InsRequired->insName);
+		tmp = InsRequired;
 		InsRequired = InsRequired->next;
+		free(tmp);
 	} while (deleteFormat == ALL && InsRequired != NULL);
 }
 
@@ -257,7 +260,7 @@ char* getDetailsOfMusicians(int size, MusPricePerInst* pMusicians, CINode* InsRe
 		free(strDetails); // release what we found
 		return NULL; // return NULL for know the mission failed
 	}
-	return (checkAllocation(realloc(strDetails, sizeof(char) * d_pSize))); // return the pointer to details of musicians we found after realloc titer and check allocations 
+	return (checkAllocation((char*)realloc(strDetails, sizeof(char) * d_pSize))); // return the pointer to details of musicians we found after realloc titer and check allocations 
 }
 
 void getDataOfMusician(CINode* InsRequired, MusPricePerInst musician, unsigned short* counter, unsigned short* d_lSize, unsigned short* d_pSize, char** strDetails, int* totalPrice)
