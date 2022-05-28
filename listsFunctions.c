@@ -142,6 +142,7 @@ Concert getConcertData(char* data, InstrumentTree InstTree) // this function get
 
 void freeMusiciansGroup(Musician** MusicianGroup)
 {
+	// a function to release musician group array.
 	int i = 1;
 	while (MusicianGroup[i] != NULL)
 	{
@@ -158,6 +159,7 @@ void freeMusiciansGroup(Musician** MusicianGroup)
 
 void freeFullName(char** fullName)
 {
+	// the function releases an array of strings.
 	int i = 1;
 	while (fullName[i] != NULL)
 	{
@@ -170,6 +172,7 @@ void freeFullName(char** fullName)
 
 void freeMPIList(MPIList lst)
 {
+	// a function to release an MPI list.
 	MPI* curr = lst.head, * next;
 	while (curr != NULL)
 	{

@@ -21,6 +21,7 @@ InstrumentTree BuildInstTree(char* fileName, unsigned short* instAmount) // this
 	fclose(f); // file closing
 	return tr; // return the tree
 }
+
 TreeNode* FindPlaceForInstrument(TreeNode* node, char* instrument) // this function find the place for instruments for insert the son
 {
 	if (strcmp(node->instrument, instrument) > 0) // check if instrument we look for in left or right
@@ -38,6 +39,7 @@ TreeNode* FindPlaceForInstrument(TreeNode* node, char* instrument) // this funct
 			return FindPlaceForInstrument(node->right, instrument); // if isnt null recursive call to seach right son
 	}
 }
+
 void InsertInstrument(InstrumentTree* tr, char* insturment,unsigned short id) // this function get tree and instrument and id
 {
 	TreeNode* father; 
@@ -63,10 +65,12 @@ void InsertInstrument(InstrumentTree* tr, char* insturment,unsigned short id) //
 			father->right = newNode;
 	}
 }
+
 int findInsId(InstrumentTree tree, char* instrument)  // cover function for find instrument id
 {
 	return findInsIdRec(tree.root, instrument); // find instrument recursive call
 }
+
 int findInsIdRec(TreeNode* root, char* instrument) // this function find instrument id by recursive call
 {
 	if (root == NULL) // if root null (stop condition)
@@ -86,6 +90,7 @@ void CreateEmptyTree(InstrumentTree* tr) // create empty tree // return null in 
 {
 	tr->root = NULL;
 }
+
 bool isEmptyTree(InstrumentTree tr) // check if tree is empty
 {
 	if (tr.root == NULL)
@@ -93,6 +98,7 @@ bool isEmptyTree(InstrumentTree tr) // check if tree is empty
 	else
 		return false; // return false if isnt empty
 }
+
 Musician** BuildMusiciansGroup(char fileName[], InstrumentTree InstTree) // this function create group of musicians(array of pointers to musicians)
 {
 	FILE* f = fopen(fileName, "r"); // open the file of the musicians
@@ -120,6 +126,7 @@ Musician** BuildMusiciansGroup(char fileName[], InstrumentTree InstTree) // this
 	musicians = checkAllocation(tmp);
 	return musicians; // return the array of pointers to musician
 }
+
 Musician* CreateMusician(char* line, InstrumentTree InstTree)
 {
 	char seps[] = SEPS, * token = NULL;
@@ -130,6 +137,7 @@ Musician* CreateMusician(char* line, InstrumentTree InstTree)
 	CreateMPIList(token, line, InstTree, &(musician->instruments)); // create MPI list for this musician
 	return musician;
 }
+
 char** getMusicianName(char** pToken, char* line, InstrumentTree InstTree) // this function get name of musician from line of text
 {
 	char seps[] = SEPS, * token = NULL;
@@ -161,11 +169,13 @@ char** getMusicianName(char** pToken, char* line, InstrumentTree InstTree) // th
 
 void freeInsTree(InstrumentTree instTree)
 {
+	// a function to release instTree.
 	freeInsTreeRec(instTree.root);
 }
 
 void freeInsTreeRec(TreeNode* root)
 {
+	// the rec helper function for freeInsTree.
 	if (root == NULL)
 		return;
 	else

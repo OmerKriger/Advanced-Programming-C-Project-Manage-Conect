@@ -322,7 +322,6 @@ void initializeIsChosen(Musician** musicians) // this function mark all the musi
 
 char* musicanName(char** arr, unsigned short* size) // this function bring from array of full name one string of full name
 {
-
 	int i = 0;
 	char* str;
 	unsigned short int strSize = 0;
@@ -352,6 +351,7 @@ char* musicanName(char** arr, unsigned short* size) // this function bring from 
 
 void freeMusicianCollection(MusiciansCollection* musicianCollection, int instAmount)
 {
+	// a function to free Musician collection.
 	int i;
 	MusPricePerInst* curr;
 	for (i = instAmount - 1; 0 <= i; i--)
@@ -364,6 +364,7 @@ void freeMusicianCollection(MusiciansCollection* musicianCollection, int instAmo
 
 void freeAll(InstrumentTree instTree, Musician** MusiciansGroup, MusiciansCollection* musicianCollection, int instAmount)
 {
+	// a function to free all the allocated memory that have not been released yet.
 	freeInsTree(instTree);
 	freeMusiciansGroup(MusiciansGroup);
 	freeMusicianCollection(musicianCollection, instAmount);

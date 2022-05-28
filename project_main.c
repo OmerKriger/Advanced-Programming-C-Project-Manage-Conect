@@ -1,3 +1,4 @@
+#include <stdlib.h>
 
 /*
 Nir Peretz, ID: 318382850
@@ -33,6 +34,7 @@ void main(int argc, char* argv[]) // the main function get the name of instrumen
 	getShow(InstTree, MusiciansGroup, musicianCollection);  // this function get from user the details required for the show pick-up musicians by the parameters and print the details if have the musicians for the concert.
  
 	freeAll(InstTree, MusiciansGroup, musicianCollection, instAmount);
+
 }
 
 
